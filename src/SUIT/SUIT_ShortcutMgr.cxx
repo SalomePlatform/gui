@@ -46,6 +46,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 const std::wstring SHORTCUT_MGR_LOG_PREFIX = L"SHORTCUT_MGR_DBG: ";
 bool ShCutDbg(const QString& theString)
 {
@@ -718,6 +719,16 @@ const std::map<QString, QKeySequence> SUIT_ShortcutContainer::getModuleShortcuts
   return shortcutsInversed;
 }
 
+bool SUIT_ShortcutContainer::hasKeySequence(const QString& theModuleID, const QKeySequence& theKeySequence) const
+{
+  const auto itModuleShortcuts = myShortcuts.find(theModuleID);
+  if (itModuleShortcuts == myShortcuts.end())
+    return false;
+
+  const auto& moduleShortcuts = itModuleShortcuts->second;
+  return moduleShortcuts.find(theKeySequence) != moduleShortcuts.end();
+}
+
 QString SUIT_ShortcutContainer::toString() const
 {
   QString text;
@@ -844,12 +855,14 @@ void SUIT_ActionAssets::merge(const SUIT_ActionAssets& theOther, bool theOverrid
     myIconPath = theOther.myIconPath;
 }
 
-std::map<QString, std::map<QString, QKeySequence>> SUIT_ShortcutContainer::merge(
+std::map<QString, std::map<QString, std::pair<QKeySequence, QKeySequence>>> SUIT_ShortcutContainer::merge(
   const SUIT_ShortcutContainer& theOther,
   bool theOverride,
   bool theTreatAbsentIncomingAsDisabled
 ) {
-  std::map<QString, std::map<QString, QKeySequence>> changesOfThis;
+  std::map<QString, std::map<QString, std::pair<QKeySequence, QKeySequence>>> changesOfThis;
+
+  const SUIT_ShortcutContainer copyOfThisBeforeMerge = *this; // TODO Get rid of whole container copying.
 
   for (const auto& shortcutsInversedOfOtherPair : theOther.myShortcutsInversed) {
     const QString& moduleIDOther = shortcutsInversedOfOtherPair.first;
@@ -857,15 +870,17 @@ std::map<QString, std::map<QString, QKeySequence>> SUIT_ShortcutContainer::merge
     for (const auto& shortcutInversedOther : shortcutsInversedOther) {
       const QString& inModuleActionIDOther = shortcutInversedOther.first;
       const QKeySequence& keySequenceOther = shortcutInversedOther.second;
+      const QKeySequence& keySequenceThis  = getKeySequence(moduleIDOther, inModuleActionIDOther);
       if (theOverride) {
-        if (hasShortcut(moduleIDOther, inModuleActionIDOther) && getKeySequence(moduleIDOther, inModuleActionIDOther) == keySequenceOther) {
+        if (hasShortcut(moduleIDOther, inModuleActionIDOther) && keySequenceThis == keySequenceOther) {
           continue;
         }
         else /* if this has no shortcut for the action  or  if this has a shortcut for the action, but the key sequence differs. */ {
           const auto disabledActionsOfThis = setShortcut(moduleIDOther, inModuleActionIDOther, keySequenceOther, true);
-          changesOfThis[moduleIDOther][inModuleActionIDOther] = keySequenceOther;
+          //changesOfThis[moduleIDOther][inModuleActionIDOther] = std::pair<QKeySequence, QKeySequence>(keySequenceThis, keySequenceOther);
+          changesOfThis[moduleIDOther][inModuleActionIDOther] = std::pair<QKeySequence, QKeySequence>(copyOfThisBeforeMerge.getKeySequence(moduleIDOther, inModuleActionIDOther), keySequenceOther);
           for (const auto& disabledActionOfThis : disabledActionsOfThis) {
-            changesOfThis[disabledActionOfThis.first][disabledActionOfThis.second] = NO_KEYSEQUENCE;
+            changesOfThis[disabledActionOfThis.first][disabledActionOfThis.second] = std::pair<QKeySequence, QKeySequence>(keySequenceOther, NO_KEYSEQUENCE);
           }
         }
       }
@@ -875,10 +890,10 @@ std::map<QString, std::map<QString, QKeySequence>> SUIT_ShortcutContainer::merge
         else {
           const auto conflictingActionsOfThis = setShortcut(moduleIDOther, inModuleActionIDOther, keySequenceOther, false);
           if (conflictingActionsOfThis.empty()) {
-            changesOfThis[moduleIDOther][inModuleActionIDOther] = keySequenceOther;
+            changesOfThis[moduleIDOther][inModuleActionIDOther] = std::pair<QKeySequence, QKeySequence>(NO_KEYSEQUENCE, keySequenceOther);
           }
           else /* if this has no shortcut for the action, but the incoming key sequence conflicts with others shortcuts. */ {
-            changesOfThis[moduleIDOther][inModuleActionIDOther] = NO_KEYSEQUENCE;
+            changesOfThis[moduleIDOther][inModuleActionIDOther] = std::pair<QKeySequence, QKeySequence>(NO_KEYSEQUENCE, NO_KEYSEQUENCE);
           }
         }
       }
@@ -903,8 +918,8 @@ std::map<QString, std::map<QString, QKeySequence>> SUIT_ShortcutContainer::merge
 
         auto& moduleShortcuts = itShortcutsPair->second;
         moduleShortcuts.erase(inversedShortcut.second);
+        changesOfThis[moduleID][inversedShortcut.first] = std::pair<QKeySequence, QKeySequence>(inversedShortcut.second, NO_KEYSEQUENCE);
         inversedShortcut.second = NO_KEYSEQUENCE;
-        changesOfThis[moduleID][inversedShortcut.first] = NO_KEYSEQUENCE;
       }
     }
   }
@@ -916,7 +931,7 @@ std::map<QString, std::map<QString, QKeySequence>> SUIT_ShortcutContainer::merge
 SUIT_ShortcutMgr* SUIT_ShortcutMgr::myShortcutMgr = nullptr;
 
 SUIT_ShortcutMgr::SUIT_ShortcutMgr()
-: QObject()
+: QObject(), myActiveModuleIDs({SUIT_ShortcutMgr::ROOT_MODULE_ID})
 {
   qApp->installEventFilter( this );
 }
@@ -1298,10 +1313,8 @@ void SUIT_ShortcutMgr::registerAction(const QString& theActionID, QAction* theAc
   const QString& inModuleActionID = moduleIDAndActionID.second;
 
   if (inModuleActionID.isEmpty()) {
-    ShCutDbg() && ShCutDbg("Attempt to register an action \"" + theAction->toolTip() + "\" with invalid ID \"" + theActionID + "\".");
-    if (theAction->shortcut() != NO_KEYSEQUENCE)
-      theAction->setShortcut(NO_KEYSEQUENCE);
-
+    ShCutDbg() && ShCutDbg("Attempt to register an action \"" + theAction->toolTip() + "\" with invalid ID \"" + theActionID + "\". The action is treated as anonymous.");
+    registerAnonymousShortcut(theAction);
     return;
   }
 
@@ -1415,12 +1428,28 @@ QString SUIT_ShortcutMgr::getActionID(const QAction* theAction) const
 
 void SUIT_ShortcutMgr::setActionsOfModuleEnabled(const QString& theModuleID, const bool theEnable) const
 {
-  const auto itModuleActions = myActions.find(theModuleID);
-  if (itModuleActions == myActions.end())
-    return;
+#ifdef SHORTCUT_MGR_DBG
+  if (theEnable)
+    ShCutDbg("Enable actions of module \"" + theModuleID + "\".");
+  else
+    ShCutDbg("Disable actions of module \"" + theModuleID + "\".");
+
+    ShCutDbg("Anonymous actions before: " + anonymousShortcutsToString());
+#endif//SHORTCUT_MGR_DBG
+
+  if (theEnable)
+    myActiveModuleIDs.emplace(theModuleID);
+  else
+    myActiveModuleIDs.erase(theModuleID);
+
+  enableAnonymousShortcutsClashingWith(theModuleID, !theEnable);
 
   SUIT_Application* app = SUIT_Session::session()->activeApplication();
   if (!app)
+    return;
+
+  const auto itModuleActions = myActions.find(theModuleID);
+  if (itModuleActions == myActions.end())
     return;
 
   const std::map<QString, std::set<QAction*>>& moduleActions = itModuleActions->second;
@@ -1431,6 +1460,15 @@ void SUIT_ShortcutMgr::setActionsOfModuleEnabled(const QString& theModuleID, con
         action->setEnabled(theEnable);
     }
   }
+
+  #ifdef SHORTCUT_MGR_DBG
+    ShCutDbg("Anonymous actions after: " + anonymousShortcutsToString());
+  #endif//SHORTCUT_MGR_DBG
+}
+
+void SUIT_ShortcutMgr::setSectionEnabled(const QString& theInModuleActionIDPrefix, bool theEnable) const
+{
+  setActionsOfModuleEnabled(theInModuleActionIDPrefix, theEnable);
 }
 
 void SUIT_ShortcutMgr::setActionsWithPrefixInIDEnabled(const QString& theInModuleActionIDPrefix, bool theEnable) const
@@ -1448,11 +1486,6 @@ void SUIT_ShortcutMgr::setActionsWithPrefixInIDEnabled(const QString& theInModul
         action->setEnabled(theEnable);
     }
   }
-}
-
-void SUIT_ShortcutMgr::setSectionEnabled(const QString& theInModuleActionIDPrefix, bool theEnable) const
-{
-  setActionsWithPrefixInIDEnabled(theInModuleActionIDPrefix, theEnable);
 }
 
 void SUIT_ShortcutMgr::rebindActionsToKeySequences() const
@@ -1508,38 +1541,79 @@ void SUIT_ShortcutMgr::mergeShortcutContainer(const SUIT_ShortcutContainer& theC
   const auto changes = myShortcutContainer.merge(theContainer, theOverride, theTreatAbsentIncomingAsDisabled);
   ShCutDbg() && ShCutDbg("ShortcutMgr keeps following shortcuts:\n" + myShortcutContainer.toString());
 
+  {
+#ifdef SHORTCUT_MGR_DBG
+    QString changesStr = "Changes:\n";
+    for (const auto& moduleIDAndChanges : changes) {
+      const QString& moduleID = moduleIDAndChanges.first;
+      const auto& moduleChanges = moduleIDAndChanges.second;
+      changesStr += "\t\"" + moduleID + "\":\n";
+      for (const std::pair<QString, std::pair<QKeySequence, QKeySequence>>& modifiedShortcut : moduleChanges) {
+        changesStr += "\t\t\"" + modifiedShortcut.first + "\": " + modifiedShortcut.second.first.toString() + "->" + modifiedShortcut.second.second.toString() + ";\n";
+      }
+    }
+    ShCutDbg(changesStr);
+#endif//SHORTCUT_MGR_DBG
+  }
+
+  /** { keySequence, {moduleID, isTheKeySequenceBound}[] }[] */
+  std::map<QKeySequence, std::map<QString, bool>> modifiedBoundStates;
+
   // Turn off hotkeys for disabled shortcuts.
   for (const auto& moduleIDAndChanges : changes) {
     const QString& moduleID = moduleIDAndChanges.first;
     const auto& moduleChanges = moduleIDAndChanges.second;
-    for (const std::pair<QString, QKeySequence>& modifiedShortcut : moduleChanges) {
-      if (modifiedShortcut.second == NO_KEYSEQUENCE) {
+    for (const std::pair<QString, std::pair<QKeySequence, QKeySequence>>& modifiedShortcut : moduleChanges) {
+      if (modifiedShortcut.second.second == NO_KEYSEQUENCE) {
         const std::set<QAction*> actions = getActions(moduleID, modifiedShortcut.first);
         for (QAction* const action : actions) {
           action->setShortcut(NO_KEYSEQUENCE);
         }
       }
+
+      if (modifiedShortcut.second.first != NO_KEYSEQUENCE)
+        modifiedBoundStates[modifiedShortcut.second.first][moduleID] = false;
     }
   }
 
   // Turn on hotkeys for enabled shortcuts.
   for (const auto& moduleIDAndChanges : changes) {
     const QString& moduleID = moduleIDAndChanges.first;
+
     const auto& moduleChanges = moduleIDAndChanges.second;
-    for (const std::pair<QString, QKeySequence>& modifiedShortcut : moduleChanges) {
-      if (modifiedShortcut.second != NO_KEYSEQUENCE) {
+    for (const std::pair<QString, std::pair<QKeySequence, QKeySequence>>& modifiedShortcut : moduleChanges) {
+      if (modifiedShortcut.second.second != NO_KEYSEQUENCE) {
         const std::set<QAction*> actions = getActions(moduleID, modifiedShortcut.first);
         for (QAction* const action : actions) {
-          action->setShortcut(modifiedShortcut.second);
+          action->setShortcut(modifiedShortcut.second.second);
         }
+
+        modifiedBoundStates[modifiedShortcut.second.second][moduleID] = true;
       }
     }
+  }
+
+  // Update anonymous shortcuts.
+  for (const auto& ksAndBoundStates : modifiedBoundStates) {
+    const auto& keySequence = ksAndBoundStates.first;
+    const auto& boundStates = ksAndBoundStates.second;
+
+    bool ksIsBoundToAnActionInActiveModule = false;
+    for (const auto& moduleIDAndBoundState : boundStates) {
+      const QString& moduleID = moduleIDAndBoundState.first;
+      const bool keySequenceIsBound = moduleIDAndBoundState.second;
+      if (keySequenceIsBound && myActiveModuleIDs.find(moduleID) != myActiveModuleIDs.end()) {
+        ksIsBoundToAnActionInActiveModule = true;
+        break;
+      }
+    }
+    enableAnonymousShortcutsClashingWith(keySequence, !ksIsBoundToAnActionInActiveModule);
   }
 
   SUIT_ShortcutMgr::saveShortcutsToPreferences(changes);
 }
 
-QKeySequence SUIT_ShortcutMgr::getKeySequence(const QString& theModuleID, const QString& theInModuleActionID) const
+const QKeySequence& SUIT_ShortcutMgr::getKeySequence(const QString& theModuleID, const QString& theInModuleActionID) const
 {
   return myShortcutContainer.getKeySequence(theModuleID, theInModuleActionID);
 }
@@ -1690,6 +1764,29 @@ void SUIT_ShortcutMgr::onActionDestroyed(QObject* theObject)
   myActionIDs.erase(itID);
 }
 
+void SUIT_ShortcutMgr::onAnonymousActionDestroyed(QObject* theObject)
+{
+  QAction* action = static_cast<QAction*>(theObject);
+
+  const auto itShortcut = myAnonymousShortcuts.find(action);
+  if (itShortcut == myAnonymousShortcuts.end())
+    return;
+
+  const auto& keySequence = itShortcut->second;
+
+  const auto itShortcutsInverse = myAnonymousShortcutsInverse.find(keySequence);
+  if (itShortcutsInverse == myAnonymousShortcutsInverse.end()) {
+    ShCutDbg("Faulty logics of anonymous action destruction.");
+    return;
+  }
+  std::set<QAction*>& actions = itShortcutsInverse->second;
+  actions.erase(action);
+  if (actions.empty())
+    myAnonymousShortcutsInverse.erase(itShortcutsInverse);
+
+  myAnonymousShortcuts.erase(itShortcut);
+}
+
 bool SUIT_ShortcutMgr::eventFilter(QObject* theObject, QEvent* theEvent)
 {
   if (theEvent) {
@@ -1723,14 +1820,8 @@ bool SUIT_ShortcutMgr::eventFilter(QObject* theObject, QEvent* theEvent)
         if (aQAction)
           DevTools::get()->collectAssetsOfActionWithInvalidID(aQAction);
 #endif//SHORTCUT_MGR_DEVTOOLS
-        if (aQAction && aQAction->shortcut() != NO_KEYSEQUENCE) {
-#ifdef SHORTCUT_MGR_DBG
-          ShCutDbg("ActionAdded event, but the added action is not QtxAction and bound to non-empty key sequence. name: \"" + aQAction->toolTip() + "\".");
-#endif//SHORTCUT_MGR_DBG
-          // Since non-QtxAction has no ID, it is impossible to properly manage its shortcut.
-          // And the shortcut may interfere with managed ones.
-          aQAction->setShortcut(NO_KEYSEQUENCE);
-        }
+        if (aQAction)
+          registerAnonymousShortcut(aQAction);
       }
     }
   }
@@ -1748,14 +1839,17 @@ std::set<std::pair<QString, QString>> SUIT_ShortcutMgr::setShortcutNoIDChecks(co
     /** { moduleID, {inModuleActionID, keySequence}[] }[] */
     std::map<QString, std::map<QString, QKeySequence>> modifiedShortcuts;
 
+    /** { moduleID, isTheKeySequenceBound }[] */
+    std::map<QString, bool> modifiedBoundStates;
+
     for (const auto& moduleIDAndActionID : disabledShortcutsIDs) {
       // Unbind actions of disabled shortcuts.
 
       const QString& moduleID = moduleIDAndActionID.first;
       const QString& inModuleActionID = moduleIDAndActionID.second;
 
-      std::map<QString, QKeySequence>& modifiedModuleShortcuts = modifiedShortcuts[moduleID];
-      modifiedModuleShortcuts[inModuleActionID] = NO_KEYSEQUENCE;
+      modifiedShortcuts[moduleID][inModuleActionID] = NO_KEYSEQUENCE;
+      modifiedBoundStates[moduleID] = false;
 
       const std::set<QAction*> actions = getActions(moduleID, inModuleActionID);
       for (QAction* const action : actions) {
@@ -1764,14 +1858,31 @@ std::set<std::pair<QString, QString>> SUIT_ShortcutMgr::setShortcutNoIDChecks(co
     }
 
     { // Bind actions to theKeySequence.
-      std::map<QString, QKeySequence>& modifiedModuleShortcuts = modifiedShortcuts[theModuleID];
-      modifiedModuleShortcuts[theInModuleActionID] = theKeySequence;
+      modifiedShortcuts[theModuleID][theInModuleActionID] = theKeySequence;
+
+      const auto it = modifiedBoundStates.find(theModuleID);
+      if (it == modifiedBoundStates.end())
+        modifiedBoundStates[theModuleID] = true;
+      else
+        modifiedBoundStates.erase(it);
 
       const std::set<QAction*> actions = getActions(theModuleID, theInModuleActionID);
       for (QAction* const action : actions) {
         action->setShortcut(theKeySequence);
       }
     }
+
+    // Update anonymous shortcuts.
+    bool ksIsBoundToAnActionInActiveModule = false;
+    for (const auto& moduleIDAndBoundState : modifiedBoundStates) {
+      const QString& moduleID = moduleIDAndBoundState.first;
+      const bool keySequenceIsBound = moduleIDAndBoundState.second;
+      if (keySequenceIsBound && myActiveModuleIDs.find(moduleID) != myActiveModuleIDs.end()) {
+        ksIsBoundToAnActionInActiveModule = true;
+        break;
+      }
+    }
+    enableAnonymousShortcutsClashingWith(theKeySequence, !ksIsBoundToAnActionInActiveModule);
 
     SUIT_ShortcutMgr::saveShortcutsToPreferences(modifiedShortcuts);
   }
@@ -1785,7 +1896,7 @@ void SUIT_ShortcutMgr::setShortcutsFromPreferences()
 
   SUIT_ShortcutContainer container;
   SUIT_ShortcutMgr::fillContainerFromPreferences(container, false /*theDefaultOnly*/);
-  mergeShortcutContainer(container, true /*theOverrde*/, false /*theTreatAbsentIncomingAsDisabled*/);
+  mergeShortcutContainer(container, true /*theOverride*/, false /*theTreatAbsentIncomingAsDisabled*/);
   setAssetsFromResources();
 
   ShCutDbg() && ShCutDbg("ShortcutMgr has been initialized.");
@@ -1814,6 +1925,33 @@ void SUIT_ShortcutMgr::setShortcutsFromPreferences()
       resMgr->setValue(sectionName, shortcutInversed.first, shortcutInversed.second.toString());
 
       ShCutDbg() && ShCutDbg("Saving shortcut: \"" + moduleID + "\"\t\"" + shortcutInversed.first + "\"\t\"" + shortcutInversed.second.toString() + "\"");
+    }
+  }
+}
+
+/*static*/ void SUIT_ShortcutMgr::saveShortcutsToPreferences(const std::map<QString, std::map<QString, std::pair<QKeySequence, QKeySequence>>>& theShortcutsInversed)
+{
+  ShCutDbg() && ShCutDbg("Saving preferences to resources.");
+
+  SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+  if (!resMgr) {
+    Warning("SUIT_ShortcutMgr can't retrieve resource manager!");
+    return;
+  }
+
+  for (const auto& moduleIDAndShortcutsInversed : theShortcutsInversed) {
+    const auto& moduleID = moduleIDAndShortcutsInversed.first;
+    const auto& moduleShortcutsInversed = moduleIDAndShortcutsInversed.second;
+    for (const auto& shortcutInversed : moduleShortcutsInversed) {
+      if (shortcutInversed.first.isEmpty()) {
+        ShCutDbg("Attempt to serialize a shortcut with empty action ID.");
+        continue;
+      }
+
+      const QString sectionName = SECTION_NAME_PREFIX + resMgr->sectionsToken() + moduleID;
+      resMgr->setValue(sectionName, shortcutInversed.first, shortcutInversed.second.second.toString());
+
+      ShCutDbg() && ShCutDbg("Saving shortcut: \"" + moduleID + "\"\t\"" + shortcutInversed.first + "\"\t\"" + shortcutInversed.second.second.toString() + "\"");
     }
   }
 }
@@ -1964,6 +2102,111 @@ void SUIT_ShortcutMgr::setAssetsFromResources(QString theLanguage)
 
     myModuleAssets.emplace(moduleID, std::move(assets));
   }
+}
+
+void SUIT_ShortcutMgr::registerAnonymousShortcut(QAction* const theAction)
+{
+  const auto itAnSh = myAnonymousShortcuts.find(theAction);
+  if (itAnSh != myAnonymousShortcuts.end()) {
+#ifdef SHORTCUT_MGR_DBG
+    ShCutDbg("Registered anonymous shortcut is registered again.");
+#endif//SHORTCUT_MGR_DBG
+    onAnonymousActionDestroyed(theAction);
+  }
+
+  const QKeySequence keySequence = theAction->shortcut();
+
+  if (keySequence == NO_KEYSEQUENCE)
+    return;
+
+#ifdef SHORTCUT_MGR_DBG
+  ShCutDbg("Anonymous shortcut is registered: \"" + theAction->toolTip() + "\" - " + keySequence.toString() + ".");
+#endif//SHORTCUT_MGR_DBG
+
+  for (const auto& activeModuleID : myActiveModuleIDs) {
+    if (myShortcutContainer.hasKeySequence(activeModuleID, keySequence)) {
+      theAction->setShortcut(NO_KEYSEQUENCE);
+      break;
+    }
+  }
+
+  myAnonymousShortcuts[theAction] = keySequence;
+  myAnonymousShortcutsInverse[keySequence].emplace(theAction);
+
+  connect(theAction, SIGNAL(destroyed(QObject*)), this, SLOT (onAnonymousActionDestroyed(QObject*)));
+}
+
+void SUIT_ShortcutMgr::enableAnonymousShortcutsClashingWith(const QString& theModuleID, const bool theEnable) const
+{
+  for (const auto& ksAndActions : myAnonymousShortcutsInverse) {
+    const QKeySequence& keySequence = ksAndActions.first;
+
+    if (!myShortcutContainer.hasKeySequence(theModuleID, keySequence))
+      continue;
+
+    const std::set<QAction*>& actions = ksAndActions.second;
+    if (theEnable) {
+      for (const auto& action : actions)
+        action->setShortcut(keySequence);
+    }
+    else {
+      for (const auto& action : actions)
+        action->setShortcut(NO_KEYSEQUENCE);
+    }
+  }
+}
+
+void SUIT_ShortcutMgr::enableAnonymousShortcutsClashingWith(const QKeySequence& theKeySequence, bool theEnable) const
+{
+  const auto itShortcutsInverse = myAnonymousShortcutsInverse.find(theKeySequence);
+  if (itShortcutsInverse == myAnonymousShortcutsInverse.end())
+    return;
+
+  const std::set<QAction*>& actions = itShortcutsInverse->second;
+  if (theEnable) {
+    for (const auto& action : actions)
+      action->setShortcut(theKeySequence);
+  }
+  else {
+    for (const auto& action : actions)
+      action->setShortcut(NO_KEYSEQUENCE);
+  }
+}
+
+QString SUIT_ShortcutMgr::anonymousShortcutsToString() const
+{
+  QString res;
+  res += "myAnonymousShortcutsInverse: {\n";
+  for (const auto& ksAndActions : myAnonymousShortcutsInverse) {
+    const QKeySequence& ks = ksAndActions.first;
+    const std::set<QAction*>& actions = ksAndActions.second;
+    res += "\t" + ks.toString() + ":";
+    for (const auto& action : actions) {
+      std::ostringstream ss;
+      ss << (void const *)action;
+      std::string addressStr = ss.str();
+      res += " " + QString::fromStdString(addressStr);
+    }
+    res += ";\n";
+  }
+  res += "};\n\n";
+
+  res += "myAnonymousShortcuts: {\n";
+  for (const auto& shortcut : myAnonymousShortcuts) {
+    const auto& action = shortcut.first;
+    const QKeySequence& ks = shortcut.second;
+
+    std::ostringstream ss;
+    ss << (void const *)action;
+    std::string addressStr = ss.str();
+    res += "\t" + QString::fromStdString(addressStr) + ": {\n";
+    res += "\t\tRegistered key sequence: " + ks.toString() + ";\n";
+    res += "\t\tBound      key sequence: " + action->shortcut().toString() + ";\n";
+    res += "\t};\n";
+  }
+  res += "};\n\n";
+
+  return res;
 }
 
 

@@ -2576,7 +2576,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
     ob->treeView()->header()->setSectionResizeMode(SUIT_DataObject::VisibilityId, QHeaderView::Fixed);
     ob->treeView()->header()->moveSection(SUIT_DataObject::NameId,SUIT_DataObject::VisibilityId);
     ob->treeView()->setColumnWidth(SUIT_DataObject::VisibilityId, VISIBILITY_COLUMN_WIDTH);
-    ob->setProperty( "shortcut", QKeySequence( "Alt+Shift+O" ) );
+    ob->setProperty( "shortcut", QKeySequence( "Ctrl+Shift+O" ) );
     wid = ob;
     ob->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
   }
@@ -2596,7 +2596,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
     pyCons->setFont( resMgr->fontValue( "PyConsole", "font" ) );
     pyCons->setIsShowBanner( resMgr->booleanValue( "PyConsole", "show_banner", true ) );
     pyCons->setAutoCompletion( resMgr->booleanValue( "PyConsole", "auto_completion", true ) );
-    pyCons->setProperty( "shortcut", QKeySequence( "Alt+Shift+P" ) );
+    pyCons->setProperty( "shortcut", QKeySequence( "Ctrl+Shift+P" ) );
     wid = pyCons;
   }
 #endif

@@ -242,7 +242,7 @@ bool LightApp_Module::activateModule( SUIT_Study* study )
   if ( action(myErase) )
     action(myErase)->setEnabled(true);
 
-  application()->shortcutMgr()->setActionsWithPrefixInIDEnabled( moduleName() );
+  application()->shortcutMgr()->setActionsOfModuleEnabled( name() );
 
   /*  BUG 0020498 : The Entry column is always shown at module activation
       The registration of column is moved into LightApp_Application
@@ -282,7 +282,7 @@ bool LightApp_Module::deactivateModule( SUIT_Study* study )
   if ( action(myErase) )
     action(myErase)->setEnabled(false);
 
-  application()->shortcutMgr()->setActionsWithPrefixInIDEnabled( moduleName(), false );
+  application()->shortcutMgr()->setActionsOfModuleEnabled( name(), false );
 
   /*  BUG 0020498 : The Entry column is always shown at module activation
   QString EntryCol = QObject::tr( "ENTRY_COLUMN" );

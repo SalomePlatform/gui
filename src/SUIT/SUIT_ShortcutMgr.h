@@ -45,7 +45,7 @@ class QJsonObject;
 #endif
 
 // Define SHORTCUT_MGR_DBG to enable SUIT_ShortcutMgr debug logging.
-// #define SHORTCUT_MGR_DBG
+#define SHORTCUT_MGR_DBG
 /*! \returns true, if SUIT_ShortcutMgr debug logging is enabled. */
 SUIT_EXPORT extern inline bool ShCutDbg() {
 #ifdef SHORTCUT_MGR_DBG
@@ -126,12 +126,14 @@ public:
   \param theTreatAbsentIncomingAsDisabled If theOverride == false, theTreatAbsentIncomingAsDisabled is ignored.
   If theOverride and theTreatAbsentIncomingAsDisabled, and theOther has no shortcut for an action, which exists in this,
   the existing shortcut in this is set disabled.
-  \returns { moduleID, { inModuleActionID, keySequence }[] }[] - Modiified shortcuts inversed. */
-  std::map<QString, std::map<QString, QKeySequence>> merge(
+    \returns { moduleID, { inModuleActionID, {oldKeySequence, newKeySequence} }[] }[] - Modiified shortcuts inversed. */
+  std::map<QString, std::map<QString, std::pair<QKeySequence, QKeySequence>>> merge(
     const SUIT_ShortcutContainer& theOther,
     bool theOverride,
     bool theTreatAbsentIncomingAsDisabled = false
   );
+
+  bool hasKeySequence(const QString& theModuleID, const QKeySequence& theKeySequence) const;
 
   /*! \brief Generates human-readable text representation of content. */
   QString toString() const;
@@ -188,6 +190,8 @@ struct SUIT_EXPORT SUIT_ActionAssets
   \class SUIT_ShortcutMgr
   \brief Handles action shortcut customization.
 
+  IDENTIFIED ACTIONS/SHORTCUTS
+
   Register actions under action IDs. Set shortcuts, which are [action ID]<->[key sequence] mappings.
   Every time an action is registered or a shorcut is set, if there are an action and a shortcut,
   which are mapped to the same action ID, the action is bound to the key sequence of the shortcut.
@@ -218,6 +222,15 @@ struct SUIT_EXPORT SUIT_ActionAssets
   Only one module can be active at instance. So a key sequence must be unique within a joined temporary table of
   root and active module shortcuts. An action is allowed to be bound with only key sequence.
 
+  ANONYMOUS ACTIONS/SHORTCUTS
+
+  Actions without action IDs or with invalid ones are called anonymous actions.
+  All anonymous actions with non-empty shortcut key sequences are registered by SUIT_ShortcutMgr.
+  If a shortcut for an anonymous action clashes with a shortcut for an action with defined ID (identified action/shortcut),
+  the shortcut for the anonymous action is disabled, but [the anonymous action, the hard-coded key sequence] pair
+  remains within the SUIT_ShortcutMgr. If user redefines key sequences for identified actions,
+  and the clash is gone, SUIT_ShortcutMgr enables back the shortcut for the anonymous action.
+
   WARNING!
   Avoid assigning shortcuts to instances of QAction and all its descendants directly.
   (1) Key sequence being bound directly to any registered/intercepted action with valid ID,
@@ -225,7 +238,10 @@ struct SUIT_EXPORT SUIT_ActionAssets
       is added to the manager and appears in user preference file. If it does conflict,
       it is reassigned with a key sequence from preference files or
       disabled and added to user preference files (if the files have no shortcut for the action).
-  (2) Key sequences being bound directly to non-QtxAction instances are disabled.
+  (2) It is not possible to reassign key sequences for anonymous actions using the Shortcut Editor GUI.
+      It is not possible to always warn user, if a key sequence, he assigns to an identified action,
+      disables an anonymous shortcut, because SUIT_ShortcutMgr has no data about anonymous actions until they appear in runtime.
+      To prevent the user from relying on such warnings, they are completely disabled.
 */
 class SUIT_EXPORT SUIT_ShortcutMgr: public QObject
 {
@@ -317,12 +333,12 @@ public:
   Only those actions are affected, whose parent widget is active desktop. */
   void setActionsOfModuleEnabled(const QString& theModuleID, const bool theEnable = true) const;
 
+  [[deprecated("Use setActionsOfModuleEnabled(const QString&, bool) instead.")]]
+  void setSectionEnabled(const QString& theInModuleActionIDPrefix, bool theEnable = true) const;
+
   /*! \brief Enables/disables all registered actions whose in-module action ID begins with theInModuleActionIDPrefix.
   Only those actions are affected, whose parent widget is active desktop. */
   void setActionsWithPrefixInIDEnabled(const QString& theInModuleActionIDPrefix, bool theEnable = true) const;
-
-  [[deprecated("Use setActionsWithPrefixInIDEnabled(const QString&, bool) instead.")]]
-  void setSectionEnabled(const QString& theInModuleActionIDPrefix, bool theEnable = true) const;
 
   /*! \brief For all registered actions binds key sequences from myShortcutContainer. */
   void rebindActionsToKeySequences() const;
@@ -349,7 +365,7 @@ public:
   void mergeShortcutContainer(const SUIT_ShortcutContainer& theContainer, bool theOverride = true, bool theTreatAbsentIncomingAsDisabled = false);
 
   /*! \brief Get a key sequence mapped to the action. */
-  QKeySequence getKeySequence(const QString& theModuleID, const QString& theInModuleActionID) const;
+  const QKeySequence& getKeySequence(const QString& theModuleID, const QString& theInModuleActionID) const;
 
   /*! \returns {inModuleActionID, keySequence}[] */
   const std::map<QString, QKeySequence>& getModuleShortcutsInversed(const QString& theModuleID) const;
@@ -386,6 +402,8 @@ private slots:
   \param theObject action being destroyed.
   */
   void onActionDestroyed(QObject* theObject);
+
+  void onAnonymousActionDestroyed(QObject* theObject);
 
 private:
   /*! \brief Overrides QObject::eventFilter().
@@ -432,6 +450,11 @@ private:
   \param theShortcuts { moduleID, { inModuleActionID, keySequence }[] }[]. Empty inModuleActionIDs are ignored. */
   static void saveShortcutsToPreferences(const std::map<QString, std::map<QString, QKeySequence>>& theShortcutsInversed);
 
+  /*! \brief Writes shortcuts to preference files.
+  \param theShortcuts { moduleID, { inModuleActionID, {oldKeySequence, newKeySequence} }[] }[]. Empty inModuleActionIDs are ignored.
+  OldKeySequences are ignored. */
+  static void saveShortcutsToPreferences(const std::map<QString, std::map<QString, std::pair<QKeySequence, QKeySequence>>>& theShortcutsInversed);
+
   /*! Fills myActionAssets from asset files in theLanguage.
   \param theLanguage If default, fills assets in current language.
   If an asset in requested language is not found, seeks for the asset EN in and then in FR.
@@ -455,6 +478,11 @@ private:
   */
   void setAssetsFromResources(QString theLanguage = QString());
 
+  void registerAnonymousShortcut(QAction* const theAction);
+  void enableAnonymousShortcutsClashingWith(const QString& theModuleID, const bool theEnable) const;
+  void enableAnonymousShortcutsClashingWith(const QKeySequence& theKeySequence, bool theEnable) const;
+  QString anonymousShortcutsToString() const;
+
 private:
   static SUIT_ShortcutMgr* myShortcutMgr;
 
@@ -472,11 +500,21 @@ private:
   Sets of moduleIDs and inModuleActionIDs may NOT be equal for myActions and myShortcutContainer.
   */
 
-  /* { moduleID, {inModuleActionID, assets}[] }[] */
+  /** { moduleID, {inModuleActionID, assets}[] }[] */
   std::map<QString, std::map<QString, std::shared_ptr<SUIT_ActionAssets>>> myActionAssets;
 
-  /* {moduleID, assets}[] */
+  /** {moduleID, assets}[] */
   mutable std::map<QString, std::shared_ptr<SUIT_ActionAssets>> myModuleAssets;
+
+  mutable std::set<QString> myActiveModuleIDs;
+
+  /** Actions without IDs, but with hard-coded non-empty key sequences.
+  * Shortcuts, defined in preferences, override shortcuts of anonymous actions - if an active module has a preference shortcut,
+  * anonymous shortcuts with the same key sequence are disabled. If the root module has a preference shortcut, which
+  * is in clash with anonymous shortcuts, clashing anonymous actions are always disabled. */
+  std::map<QAction*, QKeySequence> myAnonymousShortcuts;
+
+  std::map<QKeySequence, std::set<QAction*>> myAnonymousShortcutsInverse;
 };
 
 

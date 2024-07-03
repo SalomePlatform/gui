@@ -45,7 +45,7 @@ class QJsonObject;
 #endif
 
 // Define SHORTCUT_MGR_DBG to enable SUIT_ShortcutMgr debug logging.
-#define SHORTCUT_MGR_DBG
+// #define SHORTCUT_MGR_DBG
 /*! \returns true, if SUIT_ShortcutMgr debug logging is enabled. */
 SUIT_EXPORT extern inline bool ShCutDbg() {
 #ifdef SHORTCUT_MGR_DBG

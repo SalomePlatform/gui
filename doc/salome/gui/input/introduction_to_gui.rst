@@ -34,7 +34,6 @@ basic GUI functionalities, common for all modules.
 	* :ref:`using_object_browser_page`, used for management of objects created or imported into the SALOME application, also providing search possibilities with the :ref:`using_find_tool_page`, and 
 	* :ref:`using_notebook` - allows to predefine study variables.
 	* :ref:`python_interpreter_page`, used for direct input of python commands and dumping studies into Python scripts.  
-	* Almost all aspects of Salome look and feel can be tuned by the user in :ref:` themes_page "Themes" dialog. 
 
 * **Tools** menu gives access to: :ref:`using_catalog_generator_page`, :ref:`using_registry_tool_page` and :ref:`using_pluginsmanager`
 * **Help** menu gives access to the help on Salome modules. The appropriate help page can also be called from any operation dialog via **Help** button.
@@ -60,7 +59,6 @@ input fields.
 	using_object_browser.rst
 	using_find_tool.rst
 	using_notebook.rst
-	themes.rst
 	using_catalog_generator.rst
 	working_with_python_scripts.rst 
 	using_registry_tool.rst

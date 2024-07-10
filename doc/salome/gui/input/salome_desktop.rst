@@ -56,7 +56,6 @@ All parts of Salome desktop and study window can be managed through **View** men
 - **Toolbars** - allows to show and hide toolbars.
 - **Windows** - allows to show and hide dockable windows, such as Object Browser and Python Console.
 - **Status Bar** allows showing and hiding the Status Bar.
-- :ref:`themes_page` - allows to select and edit the style (colors and fonts) for Salome session.
 
 If there are several viewer windows in your current study and you want to display more then one at the same time, you can use the functionalities provided by the **Window** menu.
 

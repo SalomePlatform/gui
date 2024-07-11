@@ -368,9 +368,11 @@ myWatcher( 0 )
 */
 QtxDockWidget::~QtxDockWidget()
 {
-  myWatcher->setParent(nullptr);
-  delete myWatcher;
-  myWatcher = 0;
+  if (myWatcher){
+    myWatcher->setParent(nullptr);
+    delete myWatcher;
+    myWatcher = 0;
+  }
 }
 
 /*!

@@ -529,6 +529,7 @@ int AbstractGUIAppMain(int argc, char **argv)
         QColor disabledColor = QColor(127,127,127);
         darkPalette.setColor(QPalette::Window, darkColor);
         darkPalette.setColor(QPalette::WindowText, Qt::white);
+        darkPalette.setColor(QPalette::Disabled, QPalette::WindowText, disabledColor);
         darkPalette.setColor(QPalette::Base, QColor(18,18,18));
         darkPalette.setColor(QPalette::AlternateBase, darkColor);
         darkPalette.setColor(QPalette::ToolTipBase, Qt::white);

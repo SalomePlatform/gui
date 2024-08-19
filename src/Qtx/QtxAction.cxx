@@ -78,6 +78,7 @@ QtxAction::QtxAction( QObject* parent, bool toggle, const QString& ID )
 {
   setCheckable( toggle );
   setID(ID);
+  setText(ID);
 
   QApplication::instance()->installEventFilter( this );
 }

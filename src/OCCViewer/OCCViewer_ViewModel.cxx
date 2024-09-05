@@ -1706,9 +1706,9 @@ void OCCViewer_Viewer::applyExistingClipPlanesToObject (const Handle(AIS_Interac
 */
 void OCCViewer_Viewer::applyClippingPlanes(bool theUpdateHatch)
 {
-  if (myInternalClipPlanes.IsEmpty()) {
-    return; // Nothing to do
-  }
+  // Do not return immediately, if there are no local clipping planes.
+  // This is necessary to clear the clipping planes from the objects.
+  // Otherwise, the objects will be clipped by the last set of clipping planes.
 
   if (theUpdateHatch) {
     double hatchScale = computeHatchScale();
@@ -1724,6 +1724,8 @@ void OCCViewer_Viewer::applyClippingPlanes(bool theUpdateHatch)
     Handle(AIS_InteractiveObject) anObj = anIter.Value();
     Handle(ViewerData_AISShape) aShape = Handle(ViewerData_AISShape)::DownCast (anObj);
     if (!aShape.IsNull() && aShape->IsClippable()) {
+      // Update the clipping plane of each clippable object.
+      // If the internal clipping planes list is empty, the object will be displayed as is (unclipped).
       aShape->SetClipPlanes(new Graphic3d_SequenceOfHClipPlane(myInternalClipPlanes));
     }
   }

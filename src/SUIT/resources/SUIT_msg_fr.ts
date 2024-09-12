@@ -167,6 +167,13 @@ Voulez-vous l&apos;écraser ?</translation>
         <translation>Trouver une action</translation>
     </message>
     <message>
+        <source>Double click to start.</source>
+        <translation>Double-cliquez pour démarrer.</translation>
+    </message>
+</context>
+<context>
+    <name>SUIT_FindActionWidget</name>
+    <message>
         <source>Unavailable actions</source>
         <translation>Actions indisponibles</translation>
     </message>
@@ -181,6 +188,10 @@ Voulez-vous l&apos;écraser ?</translation>
     <message>
         <source>Description</source>
         <translation>Description</translation>
+    </message>
+    <message>
+        <source>Key sequence</source>
+        <translation>Séquence de touches</translation>
     </message>
 </context>
 <context>
@@ -256,6 +267,17 @@ Voulez-vous l&apos;écraser ?</translation>
     </message>
 </context>
 <context>
+    <name>SUIT_ShortcutTabWidget</name>
+    <message>
+        <source>Double click to edit key sequence.</source>
+        <translation>Double-cliquez pour modifier la séquence de touches.</translation>
+    </message>
+    <message>
+        <source>Find shortcut</source>
+        <translation>Trouver un raccourci</translation>
+    </message>
+</context>
+<context>
     <name>SUIT_ShortcutTree</name>
     <message>
         <source>Action</source>
@@ -264,6 +286,10 @@ Voulez-vous l&apos;écraser ?</translation>
     <message>
         <source>Key sequence</source>
         <translation>Séquence de touches</translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation>Description</translation>
     </message>
     <message>
         <source>Double click to edit key sequence.</source>

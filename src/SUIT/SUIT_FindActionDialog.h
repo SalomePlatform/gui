@@ -29,6 +29,7 @@
 #include <QFrame>
 #include <QTreeWidget>
 #include <QList>
+#include <QString>
 #include <QVariant>
 #include <memory>
 #include <map>
@@ -42,6 +43,7 @@ class QLineEdit;
 class QLabel;
 class QPushButton;
 class QKeyEvent;
+class SUIT_FindActionWidget;
 class SUIT_FoundActionTree;
 
 
@@ -57,21 +59,58 @@ public:
 
   void setActiveModuleID(const QString& theModuleID = SUIT_ShortcutMgr::ROOT_MODULE_ID);
 
+private:
+  void executeAction(const QString& theModuleID, const QString& theInModuleActionID);
+
+private:
+  SUIT_FindActionWidget* myFindActionWidget;
+};
+
+
+class SUIT_EXPORT SUIT_FindActionWidget : public QWidget
+{
+  Q_OBJECT
+
+public:
+  SUIT_FindActionWidget(
+    QWidget* theParent,
+    const std::function<void(const QString&, const QString&)> theCallback,
+    const QString& theActionItemToolTip,
+    bool theEnableItemsOfUnavailableActions = false,
+    bool theShowKeySequenceColumn = false,
+    const std::function<std::pair<QString, bool>(const QString&, const QString&)>& theKeySequenceGetter = std::function<std::pair<QString, bool>(const QString&, const QString&)>()
+  );
+  SUIT_FindActionWidget(const SUIT_FindActionWidget&) = delete;
+  SUIT_FindActionWidget& operator=(const SUIT_FindActionWidget&) = delete;
+  virtual ~SUIT_FindActionWidget() = default;
+
+  void showOptions(bool theToShow);
+
+  /*! \param doNotUpdateResults Set to true to initialize the instance without unnecessary computations. */
+  void setIncludedModuleIDs(const std::set<QString>& theModuleIDs = {}, bool doNotUpdateResults = false);
+  const std::set<QString>& getIncludedModuleIDs() const;
+
+  void updateUI();
+
+  void setColumnWidth(int theColumnIdx, int theColumnWidth);
+
 private slots:
   void onQueryChanged(const QString& theKeyword);
   void onSearchOptionUnavailableActionsChanged(int);
   void onSearchOptionInactiveModulesChanged(int);
 
 private:
-  void updateUI();
-
   QLineEdit* myQueryLineEdit;
   QCheckBox* myIncludeUnavailableActionsCB;
   QCheckBox* myIncludeInactiveModulesCB;
   SUIT_FoundActionTree* myFoundActionsTree;
 
-  QString myActiveModuleID;
+  std::set<QString> myIncludedModuleIDs;
   SUIT_ActionSearcher myActionSearcher;
+
+public:
+  /** void callback(theModuleID, theInModuleActionID) */
+  const std::function<void(const QString&, const QString&)> myCallback;
 };
 
 
@@ -85,31 +124,37 @@ class SUIT_EXPORT SUIT_FoundActionTree : public QTreeWidget
   Q_OBJECT
 
 public:
-  enum ElementIdx {
-    Name = 0,
-    ToolTip = 1
+  enum ColumnIdx {
+    Name,
+    ToolTip,
+    KeySequence
   };
 
   enum class SortKey {
     MatchMetrics,
     ID,
     Name,
-    ToolTip
+    ToolTip,
+    KeySequence
   };
 
-  enum class SortOrder {
-    Ascending,
-    Descending
-  };
+  static const QList<std::pair<SUIT_FoundActionTree::SortKey, Qt::SortOrder>> DEFAULT_SORT_SCHEMA;
+  static std::pair<QString, bool> getKeySequenceFromShortcutMgr(const QString& theModuleID, const QString& theInModuleActionID);
 
-  SUIT_FoundActionTree(SUIT_FindActionDialog* theParent);
+  SUIT_FoundActionTree(
+    SUIT_FindActionWidget* theParent,
+    const QString& theActionItemToolTip,
+    bool theEnableItemsOfUnavailableActions = false,
+    bool theShowKeySequenceColumn = false,
+    const std::function<std::pair<QString, bool>(const QString&, const QString&)>& theKeySequenceGetter = std::function<std::pair<QString, bool>(const QString&, const QString&)>()
+  );
   SUIT_FoundActionTree(const SUIT_FoundActionTree&) = delete;
   SUIT_FoundActionTree& operator=(const SUIT_FoundActionTree&) = delete;
   virtual ~SUIT_FoundActionTree() = default;
 
-  void updateItems(const std::map<QString, std::map<QString, SUIT_ActionSearcher::AssetsAndSearchData>>& theAssets);
+  void updateItems(const std::map<QString, std::map<QString, SUIT_ActionSearcher::AssetsAndSearchData>>& theActionAssetsAndSD);
 
-  void sort(SUIT_FoundActionTree::SortKey theKey, SUIT_FoundActionTree::SortOrder theOrder);
+  void sort(SUIT_FoundActionTree::SortKey theKey, Qt::SortOrder theOrder);
 
   void keyPressEvent(QKeyEvent* theEvent);
 
@@ -123,15 +168,20 @@ private:
 private slots:
   void onItemExecuted(QTreeWidgetItem* theWidgetItem, int theColIdx);
 
-public:
-  static const QList<std::pair<SUIT_FoundActionTree::SortKey, SUIT_FoundActionTree::SortOrder>> DEFAULT_SORT_SCHEMA;
-
 private:
   SUIT_FoundActionTree::SortKey mySortKey;
-  SUIT_FoundActionTree::SortOrder mySortOrder;
+  Qt::SortOrder mySortOrder;
 
   /** {moduleID, isExpanded}[] */
   std::map<QString, bool> myModuleItemExpansionStates;
+
+public:
+  const QString myActionItemToolTip;
+  const bool myEnableItemsOfUnavailableActions; // If false, items of unavailable actions/modules are dimmed.
+  const bool myShowKeySequenceColumn;
+
+  /** std::pair<QString, bool> getKeySequence(theModuleID, theInModuleActionID). Returns true, if KeySequence column of an action item must be styled as modified. */
+  const std::function<std::pair<QString, bool>(const QString&, const QString&)> myKeySequenceGetter;
 };
 
 
@@ -139,8 +189,8 @@ class SUIT_FoundActionTreeItem : public QTreeWidgetItem
 {
 public:
   enum Type {
-    Module = 0,
-    Action = 1,
+    Module,
+    Action
   };
 
 protected:
@@ -150,13 +200,12 @@ public:
   virtual ~SUIT_FoundActionTreeItem() = default;
   virtual SUIT_FoundActionTreeItem::Type type() const = 0;
 
-  virtual void setAssetsAndSearchData(const SUIT_ActionSearcher::AssetsAndSearchData& theAssetsAndSD, const QString& theLang) = 0;
   QString name() const;
   QString toolTip() const;
 
   virtual QVariant getValue(SUIT_FoundActionTree::SortKey theKey) const = 0;
 
-  virtual bool isEnabled() const = 0;
+  virtual void styleAsDimmed();
 
 public:
   const QString myModuleID;
@@ -170,12 +219,9 @@ public:
   virtual ~SUIT_FoundActionTreeModule() = default;
   virtual SUIT_FoundActionTreeItem::Type type() const { return SUIT_FoundActionTreeItem::Type::Module; };
 
-  /*! \brief Search data is unused. */
-  virtual void setAssetsAndSearchData(const SUIT_ActionSearcher::AssetsAndSearchData& theAssetsAndSD, const QString& theLang);
+  void setAssets(const SUIT_ShortcutModuleAssets& theAssets, const QString& theLang);
 
   virtual QVariant getValue(SUIT_FoundActionTree::SortKey theKey) const;
-
-  virtual bool isEnabled() const;
 };
 
 
@@ -189,15 +235,17 @@ public:
   virtual ~SUIT_FoundActionTreeAction() = default;
   virtual SUIT_FoundActionTreeItem::Type type() const { return SUIT_FoundActionTreeItem::Type::Action; };
 
-  virtual void setAssetsAndSearchData(const SUIT_ActionSearcher::AssetsAndSearchData& theAssetsAndSD, const QString& theLang);
+  void setAssetsAndSearchData(const SUIT_ActionSearcher::AssetsAndSearchData& theAssetsAndSD, const QString& theLang);
+  void setToolTip(const QString& theToolTip);
+  void setKeySequence(const QString& theKeySequence);
+  QString keySequence() const;
+  void styleAsKeySequenceModified(bool theIsModified);
 
   virtual QVariant getValue(SUIT_FoundActionTree::SortKey theKey) const;
   double matchMetrics() const { return myMatchMetrics; };
 
   virtual bool isEnabled() const;
   bool isEnabledBufferedValue() const { return myIsEnabledBufferedValue; };
-
-  bool trigger() const;
 
   const QString myInModuleActionID;
 

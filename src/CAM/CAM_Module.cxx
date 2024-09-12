@@ -984,19 +984,19 @@ int CAM_Module::actionId( const QAction* a ) const
   \param icon action icon
   \param menu menu text
   \param tip status bar tip
-  \param key will be disabled by SUIT_ShortcutMgr!
+  \param key May be disabled by SUIT_ShortcutMgr!
   \param parent parent object
   \param toggle if \c true, the action will be toggled
-  \param reciever action activation signal receiver object
+  \param receiver action activation signal receiver object
   \param member action activation signal receiver slot
   \param inModuleActionID module-unique action ID
 */
 QAction* CAM_Module::createAction( const int id, const QString& text, const QIcon& icon,
                                    const QString& menu, const QString& tip, const int key,
-                                   QObject* parent, const bool toggle, QObject* reciever,
+                                   QObject* parent, const bool toggle, QObject* receiver,
 				   const char* member, const QString& inModuleActionID )
 {
-  return createAction( id, text, icon, menu, tip, QKeySequence(key), parent, toggle, reciever, member, inModuleActionID );
+  return createAction( id, text, icon, menu, tip, QKeySequence(key), parent, toggle, receiver, member, inModuleActionID );
 }
 
 /*!
@@ -1012,16 +1012,16 @@ QAction* CAM_Module::createAction( const int id, const QString& text, const QIco
   \param icon action icon
   \param menu menu text
   \param tip status bar tip
-  \param key will be disabled by SUIT_ShortcutMgr!
+  \param key May be disabled by SUIT_ShortcutMgr!
   \param parent parent object
   \param toggle if \c true, the action will be toggled
-  \param reciever action activation signal receiver object
+  \param receiver action activation signal receiver object
   \param member action activation signal receiver slot
   \param inModuleActionID module-unique action ID
 */
 QAction* CAM_Module::createAction( const int id, const QString& text, const QIcon& icon,
                                    const QString& menu, const QString& tip, const QKeySequence& key,
-                                   QObject* parent, const bool toggle, QObject* reciever,
+                                   QObject* parent, const bool toggle, QObject* receiver,
 				   const char* member, const QString& inModuleActionID )
 {
   const QString actionID = makeActionID(inModuleActionID);
@@ -1030,8 +1030,8 @@ QAction* CAM_Module::createAction( const int id, const QString& text, const QIco
 
   connect( a, SIGNAL( triggered( bool ) ), this, SLOT( moduleActionActivated() ), Qt::UniqueConnection );
 
-  if ( reciever && member )
-    connect( a, SIGNAL( triggered( bool ) ), reciever, member );
+  if ( receiver && member )
+    connect( a, SIGNAL( triggered( bool ) ), receiver, member );
 
   registerAction( id, a );
 

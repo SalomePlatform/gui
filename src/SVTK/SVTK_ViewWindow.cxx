@@ -2263,7 +2263,7 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
   // Projections
   anAction = new QtxAction(tr("MNU_FRONT_VIEW"),
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_FRONT" ) ),
-                           tr( "MNU_FRONT_VIEW" ), 0, this, false, "/#Viewers/View/Set X-");
+                           tr( "MNU_FRONT_VIEW" ), 0, this, false, "/View/ViewPoint/#SetDirOX-");
   anAction->setStatusTip(tr("DSC_FRONT_VIEW"));
   connect(anAction, SIGNAL(triggered()), this, SLOT(onFrontView()));
   this->addAction(anAction);
@@ -2271,7 +2271,7 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   anAction = new QtxAction(tr("MNU_BACK_VIEW"),
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_BACK" ) ),
-                           tr( "MNU_BACK_VIEW" ), 0, this, false, "/#Viewers/View/Set X+");
+                           tr( "MNU_BACK_VIEW" ), 0, this, false, "/View/ViewPoint/#SetDirOX+");
   anAction->setStatusTip(tr("DSC_BACK_VIEW"));
   connect(anAction, SIGNAL(triggered()), this, SLOT(onBackView()));
   this->addAction(anAction);
@@ -2279,7 +2279,7 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   anAction = new QtxAction(tr("MNU_TOP_VIEW"),
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_TOP" ) ),
-                           tr( "MNU_TOP_VIEW" ), 0, this, false, "/#Viewers/View/Set Z-");
+                           tr( "MNU_TOP_VIEW" ), 0, this, false, "/View/ViewPoint/#SetDirOZ-");
   anAction->setStatusTip(tr("DSC_TOP_VIEW"));
   connect(anAction, SIGNAL(triggered()), this, SLOT(onTopView()));
   this->addAction(anAction);
@@ -2287,7 +2287,7 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   anAction = new QtxAction(tr("MNU_BOTTOM_VIEW"),
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_BOTTOM" ) ),
-                           tr( "MNU_BOTTOM_VIEW" ), 0, this, false, "/#Viewers/View/Set Z+");
+                           tr( "MNU_BOTTOM_VIEW" ), 0, this, false, "/View/ViewPoint/#SetDirOZ+");
   anAction->setStatusTip(tr("DSC_BOTTOM_VIEW"));
   connect(anAction, SIGNAL(triggered()), this, SLOT(onBottomView()));
   this->addAction(anAction);
@@ -2295,7 +2295,7 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   anAction = new QtxAction(tr("MNU_LEFT_VIEW"),
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_LEFT" ) ),
-                           tr( "MNU_LEFT_VIEW" ), 0, this, false, "/#Viewers/View/Set Y+");
+                           tr( "MNU_LEFT_VIEW" ), 0, this, false, "/View/ViewPoint/#SetDirOY+");
   anAction->setStatusTip(tr("DSC_LEFT_VIEW"));
   connect(anAction, SIGNAL(triggered()), this, SLOT(onLeftView()));
   this->addAction(anAction);
@@ -2303,7 +2303,7 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   anAction = new QtxAction(tr("MNU_RIGHT_VIEW"),
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RIGHT" ) ),
-                           tr( "MNU_RIGHT_VIEW" ), 0, this, false, "/#Viewers/View/Set Y-");
+                           tr( "MNU_RIGHT_VIEW" ), 0, this, false, "/View/ViewPoint/#SetDirOY-");
   anAction->setStatusTip(tr("DSC_RIGHT_VIEW"));
   connect(anAction, SIGNAL(triggered()), this, SLOT(onRightView()));
   this->addAction(anAction);
@@ -2312,7 +2312,7 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
   // rotate anticlockwise
   anAction = new QtxAction(tr("MNU_ANTICLOCKWISE_VIEW"),
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_ANTICLOCKWISE" ) ),
-                           tr( "MNU_ANTICLOCKWISE_VIEW" ), 0, this, false, "/#Viewers/View/Rotate anticlockwise");
+                           tr( "MNU_ANTICLOCKWISE_VIEW" ), 0, this, false, "/View/ViewPoint/#RotateAnticlockwise");
   anAction->setStatusTip(tr("DSC_ANTICLOCKWISE_VIEW"));
   connect(anAction, SIGNAL(triggered()), this, SLOT(onAntiClockWiseView()));
   this->addAction(anAction);
@@ -2321,7 +2321,7 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
   // rotate clockwise
   anAction = new QtxAction(tr("MNU_CLOCKWISE_VIEW"),
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_CLOCKWISE" ) ),
-                           tr( "MNU_CLOCKWISE_VIEW" ), 0, this, false, "/#Viewers/View/Rotate clockwise");
+                           tr( "MNU_CLOCKWISE_VIEW" ), 0, this, false, "/View/ViewPoint/#RotateClockwise");
   anAction->setStatusTip(tr("DSC_CLOCKWISE_VIEW"));
   connect(anAction, SIGNAL(triggered()), this, SLOT(onClockWiseView()));
   this->addAction(anAction);
@@ -2330,7 +2330,7 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
   // Reset
   anAction = new QtxAction(tr("MNU_RESET_VIEW"),
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RESET" ) ),
-                           tr( "MNU_RESET_VIEW" ), 0, this, false, "/#Viewers/View/Reset");
+                           tr( "MNU_RESET_VIEW" ), 0, this, false, "/View/ViewPoint/#Reset");
   anAction->setStatusTip(tr("DSC_RESET_VIEW"));
   connect(anAction, SIGNAL(triggered()), this, SLOT(onResetView()));
   this->addAction(anAction);

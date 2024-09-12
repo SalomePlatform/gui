@@ -156,10 +156,17 @@
   </context>
   <context>
     <name>SUIT_FindActionDialog</name>
-    <message>
+      <message>
         <source>Find action</source>
         <translation>検索アクション</translation>
-    </message>
+      </message>
+      <message>
+          <source>Double click to start.</source>
+          <translation>ダブルクリックして開始します。</translation>
+      </message>
+  </context>
+  <context>
+    <name>SUIT_FindActionWidget</name>
     <message>
         <source>Unavailable actions</source>
         <translation>利用できないアクション</translation>
@@ -175,6 +182,10 @@
     <message>
         <source>Description</source>
         <translation>説明</translation>
+    </message>
+    <message>
+        <source>Key sequence</source>
+        <translation>キーシーケンス</translation>
     </message>
   </context>
 <context>
@@ -250,6 +261,17 @@
       </message>
   </context>
   <context>
+      <name>SUIT_ShortcutTabWidget</name>
+      <message>
+          <source>Double click to edit key sequence.</source>
+          <translation>キーシーケンスを編集するにはダブルクリックします。</translation>
+      </message>
+      <message>
+          <source>Find shortcut</source>
+          <translation>ショートカットを探す</translation>
+      </message>
+  </context>
+  <context>
       <name>SUIT_ShortcutTree</name>
       <message>
         <source>Action</source>
@@ -258,6 +280,10 @@
       <message>
           <source>Key sequence</source>
           <translation>キーシーケンス</translation>
+      </message>
+      <message>
+          <source>Description</source>
+          <translation>説明</translation>
       </message>
       <message>
           <source>Double click to edit key sequence.</source>

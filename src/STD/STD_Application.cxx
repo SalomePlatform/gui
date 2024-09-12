@@ -157,12 +157,12 @@ void STD_Application::createActions()
   createAction( FileNewId, tr( "TOT_DESK_FILE_NEW" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_FILE_NEW" ) ),
                 tr( "MEN_DESK_FILE_NEW" ), tr( "PRP_DESK_FILE_NEW" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onNewDoc() ), "/TOT_DESK_FILE_NEW" );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onNewDoc() ), "/File/New" );
 
   createAction( FileOpenId, tr( "TOT_DESK_FILE_OPEN" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_FILE_OPEN" ) ),
                 tr( "MEN_DESK_FILE_OPEN" ), tr( "PRP_DESK_FILE_OPEN" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onOpenDoc() ), "/TOT_DESK_FILE_OPEN" );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onOpenDoc() ), "/File/Open" );
 
   createAction( FileReopenId, tr( "TOT_DESK_FILE_REOPEN" ), QIcon(),
                 tr( "MEN_DESK_FILE_REOPEN" ), tr( "PRP_DESK_FILE_REOPEN" ),
@@ -171,34 +171,34 @@ void STD_Application::createActions()
   createAction( FileCloseId, tr( "TOT_DESK_FILE_CLOSE" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_FILE_CLOSE" ) ),
                 tr( "MEN_DESK_FILE_CLOSE" ), tr( "PRP_DESK_FILE_CLOSE" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onCloseDoc() ), "/TOT_DESK_FILE_CLOSE" );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onCloseDoc() ), "/File/Close" );
   //no need in this action for mono-study application as it is same as NewDoc
   action( FileCloseId )->setVisible( false );
 
   createAction( FileExitId, tr( "TOT_DESK_FILE_EXIT" ), QIcon(),
                 tr( "MEN_DESK_FILE_EXIT" ), tr( "PRP_DESK_FILE_EXIT" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onExit() ), "/TOT_DESK_FILE_EXIT" );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onExit() ), "/File/Exit" );
 
   createAction( FileSaveId, tr( "TOT_DESK_FILE_SAVE" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_FILE_SAVE" ) ),
                 tr( "MEN_DESK_FILE_SAVE" ), tr( "PRP_DESK_FILE_SAVE" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onSaveDoc() ), "/TOT_DESK_FILE_SAVE" );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onSaveDoc() ), "/File/Save" );
 
   createAction( FileSaveAsId, tr( "TOT_DESK_FILE_SAVEAS" ), QIcon(),
                 tr( "MEN_DESK_FILE_SAVEAS" ), tr( "PRP_DESK_FILE_SAVEAS" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onSaveAsDoc() ),  "/TOT_DESK_FILE_SAVEAS");
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onSaveAsDoc() ),  "/File/SaveAs");
 
   createAction( EditCopyId, tr( "TOT_DESK_EDIT_COPY" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_EDIT_COPY" ) ),
                 tr( "MEN_DESK_EDIT_COPY" ), tr( "PRP_DESK_EDIT_COPY" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onCopy() ), "/#TOT_DESK_EDIT_COPY" );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onCopy() ), "/Edit/#Clipboard_Copy" );
 
   createAction( EditPasteId, tr( "TOT_DESK_EDIT_PASTE" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_EDIT_PASTE" ) ),
                 tr( "MEN_DESK_EDIT_PASTE" ), tr( "PRP_DESK_EDIT_PASTE" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onPaste() ), "/TOT_DESK_EDIT_PASTE" );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onPaste() ), "/Edit/#Clipboard_Paste" );
 
-  QAction* a = createAction( ViewStatusBarId, desk, true /*toggle*/, "/PRP_DESK_VIEW_STATUSBAR",
+  QAction* a = createAction( ViewStatusBarId, desk, true /*toggle*/, "/View/StatusBar_Toggle",
                              tr( "TOT_DESK_VIEW_STATUSBAR" ), tr( "MEN_DESK_VIEW_STATUSBAR" ), tr( "PRP_DESK_VIEW_STATUSBAR" ));
 
   a->setChecked( desk->statusBar()->isVisibleTo( desk ) );
@@ -207,7 +207,7 @@ void STD_Application::createActions()
   createAction( NewWindowId, tr( "TOT_DESK_NEWWINDOW" ), QIcon(),
                 tr( "MEN_DESK_NEWWINDOW" ), tr( "PRP_DESK_NEWWINDOW" ), 0, desk  );
 
-  createAction( HelpAboutId, desk, false /*toggle*/, "/PRP_DESK_HELP_ABOUT",
+  createAction( HelpAboutId, desk, false /*toggle*/, "/AboutDialog",
                              tr( "TOT_DESK_HELP_ABOUT" ), tr( "MEN_DESK_HELP_ABOUT" ), tr( "PRP_DESK_HELP_ABOUT" ),
                              resMgr->loadPixmap( "STD", tr( "ICON_DESK_ABOUT" ) ),
                              this, SLOT( onHelpAbout() ) );

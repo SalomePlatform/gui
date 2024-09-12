@@ -149,9 +149,20 @@ private:
 };
 
 
-/*! \brief GUI-related assets. */
-struct SUIT_EXPORT SUIT_ActionAssets
+class SUIT_ShortcutItemAssets;
+
+
+/*! \brief Base class for GUI-related assets of module, action or folder. Used by Shortcut Manager, Find Action Dialog, etc. */
+class SUIT_EXPORT SUIT_ShortcutAssets : public std::enable_shared_from_this<SUIT_ShortcutAssets>
 {
+public:
+  enum class Type
+  {
+    Module,
+    Item // Folder, action or folder-action.
+  };
+
+
   struct LangDependentAssets
   {
     static const QString PROP_ID_NAME;
@@ -164,25 +175,221 @@ struct SUIT_EXPORT SUIT_ActionAssets
     QString myToolTip;
   };
 
-  static const QString STRUCT_ID;
+
   static const QString PROP_ID_LANG_DEPENDENT_ASSETS;
   static const QString PROP_ID_ICON_PATH;
+  static const QString PROP_ID_CHILDREN;
 
-  bool fromJSON(const QJsonObject& theJsonObject);
+protected:
+  SUIT_ShortcutAssets(const QString& theModuleID);
+
+public:
+  virtual ~SUIT_ShortcutAssets() = 0;
+
+  const std::map<QString, std::shared_ptr<SUIT_ShortcutItemAssets>>& children() const;
+
+  /*!
+  \param theRelativeID If empty, nullptr is returned.
+  \returns Descdendant item (if exist) with inModuleID = myInModuleID/theRelativeID.
+  Module assets effectively have empty myInModuleID. */
+  std::shared_ptr<SUIT_ShortcutItemAssets> findDescendantItem(const QString& theRelativeID) const;
+
+  /*!
+  \param theRelativeID If empty, nullptr is returned.
+  \param theIsAction If true and the descendant is missing, makes the created item action.
+  \returns Descdendant item with inModuleID = myInModuleID/theRelativeID.
+  If the descendant item does not exist, creates the item and its missing ancestors. All missing ancestors are created as not actions.
+  Module assets effectively have empty myInModuleID. */
+  std::shared_ptr<SUIT_ShortcutItemAssets> descendantItem(const QString& theRelativeID, bool theIsAction = true);
+
+  virtual int depth() const = 0;
+  virtual SUIT_ShortcutAssets::Type type() const = 0;
+
+private:
+  /*! \brief Parses everything, except children.
+  \param theLangs If empty, LangDependentAssets in all available languages are parsed. */
+  bool fromJSONOwnProps(const QJsonObject& theJsonObject, const std::set<QString>& theLangs = {});
+
+public:
+  /*!
+  \param theLangs If empty, LangDependentAssets in all available languages are parsed.
+  \returns true, if any property is parsed. */
+  bool fromJSON(const QJsonObject& theJsonObject, bool theParseDescendants = true, const std::set<QString>& theLangs = {});
+
+  /*! \brief Parses only the branch of descdendants, which leads to the item with theRelativeID.
+  \param theRelativeID If empty, no descendants are added/updated.
+  \param theLangs If empty, LangDependentAssets in all available languages are parsed.
+  \returns true, if any property is parsed. */
+  bool fromJSON(const QJsonObject& theJsonObject, const QString& theRelativeID, const std::set<QString>& theLangs = {});
+
   void toJSON(QJsonObject& oJsonObject) const;
+
+  /*! \param theOverride If true, values of theOther override conflicting values of this. */
+  virtual void merge(const SUIT_ShortcutAssets& theOther, bool theOverride);
+
+  /*! \param theOverride If true, values of theOther override conflicting values of this. */
+  virtual void merge(SUIT_ShortcutAssets&& theOther, bool theOverride);
+
+private:
+  /*! \brief Parses properties of SUIT_ShortcutAssets subclasses.
+  \returns true, if any property is parsed. */
+  virtual bool fromJSONOtherProps(const QJsonObject& theJsonObject) { return false; };
+
+  virtual void toJSONVirtual(QJsonObject& oJsonObject) const {};
+
+public:
+  void loadIcon(bool theReload = false);
+
+  /*! \brief Iterates all descendants. *this is not iterated. */
+  void forEachDescendant(const std::function<void(SUIT_ShortcutItemAssets&)>& theFunc) const;
+
+  /*! \brief Iterates all descendants. *this is not iterated. */
+  void forEachDescendant(const std::function<void(const SUIT_ShortcutItemAssets&)>& theFunc) const;
+
+  /*! \brief Iterates all descendants. *this is not iterated. */
+  void forEachDescendant(const std::function<void(std::shared_ptr<SUIT_ShortcutItemAssets>)>& theFunc) const;
+
+  /*! \brief Iterates all descendants. *this is not iterated. */
+  void forEachDescendant(const std::function<void(std::shared_ptr<const SUIT_ShortcutItemAssets>)>& theFunc) const;
+
   QString toString() const;
+  virtual QString description() const = 0;
 
   QStringList getLangs() const;
   void clearAllLangsExcept(const QString& theLang);
 
-  /*! \param theOverride If true, values of theOther override conflicting values of this. */
-  void merge(const SUIT_ActionAssets& theOther, bool theOverride);
+  /*!
+  \param theLang If empty, current language is requested.
+  \returns Requested assets or assets in EN, if requested language is absent. */
+  const LangDependentAssets* bestLangDependentAssets(QString theLang = QString()) const;
+
+  virtual const QString& bestName(const QString& theLang = QString()) const = 0;
+
+  /*!
+  \param theLang If empty, current language is requested.
+  \returns Requested tool tip or tool tip in EN, if requested language is absent. If EN is absent - empty string. */
+  virtual const QString& bestToolTip(const QString& theLang = QString()) const;
+
+public:
+  const QString myModuleID;
 
   std::map<QString, LangDependentAssets> myLangDependentAssets;
   QString myIconPath;
 
-  /*! Is not serialized. */
+  /*! Not serialized. */
   QIcon myIcon;
+
+private:
+  // { IDLastToken, assets }.
+  std::map<QString, std::shared_ptr<SUIT_ShortcutItemAssets>> myChildren;
+};
+
+
+/*! \brief GUI-related module assets.*/
+class SUIT_EXPORT SUIT_ShortcutModuleAssets : public SUIT_ShortcutAssets
+{
+private:
+  SUIT_ShortcutModuleAssets(const QString& theModuleID);
+  SUIT_ShortcutModuleAssets(const SUIT_ShortcutModuleAssets&) = delete;
+  SUIT_ShortcutModuleAssets& operator= (const SUIT_ShortcutModuleAssets&) = delete;
+
+public:
+  static std::shared_ptr<SUIT_ShortcutModuleAssets> create(const QString& theModuleID);
+  ~SUIT_ShortcutModuleAssets() = default;
+
+  int depth() const { return 0; };
+  SUIT_ShortcutAssets::Type type() const { return SUIT_ShortcutAssets::Type::Module; };
+
+  /*!
+  \param theLang If empty, current language is requested.
+  \returns Requested name or name in EN, if requested language is absent. If EN is absent - moduleID. */
+  const QString& bestName(const QString& theLang = QString()) const;
+
+  QString description() const;
+};
+
+
+/*! \brief May represent not just an action, but also a folder within item tree of a module.
+May also represent action-folder: an action with nested actions.
+Each action inModuleID is unique within a tree of assets. */
+class SUIT_EXPORT SUIT_ShortcutItemAssets : public SUIT_ShortcutAssets
+{
+  friend class SUIT_ShortcutAssets;
+
+public:
+  static void loadDefaultIcons();
+  static const QString PROP_ID_IS_ACTION; // Absense of the key in JSON means myIsAction == true.
+
+private:
+  static QIcon DEFAUT_ICON_ACTION;
+  static QIcon DEFAUT_ICON_FOLDER;
+  static QIcon DEFAUT_ICON_FOLDER_ACTION;
+
+  /*! \brief Creates root item of module.
+  \param theModule must not be nullptr.
+  \param theIDLastToken is also a inModuleID.
+  */
+  SUIT_ShortcutItemAssets(std::shared_ptr<SUIT_ShortcutModuleAssets> theModule, const QString& theIDLastToken, bool theIsAction = true);
+
+  /*! \brief Creates nested item within item tree of module.
+  \param theParent must not be nullptr. */
+  SUIT_ShortcutItemAssets(std::shared_ptr<SUIT_ShortcutItemAssets> theParentItem, const QString& theIDLastToken, bool theIsAction = true);
+  SUIT_ShortcutItemAssets(const SUIT_ShortcutItemAssets&) = delete;
+  SUIT_ShortcutItemAssets& operator= (const SUIT_ShortcutItemAssets&) = delete;
+  static std::shared_ptr<SUIT_ShortcutItemAssets> create(std::shared_ptr<SUIT_ShortcutAssets> theParentItemOrModule, const QString& theIDLastToken, bool theIsAction = true);
+
+ public:
+  ~SUIT_ShortcutItemAssets() = default;
+
+  int depth() const;
+  SUIT_ShortcutAssets::Type type() const { return SUIT_ShortcutAssets::Type::Item; };
+
+  /*! \param theOverride If true, values of theOther override conflicting values of this. */
+  void merge(const SUIT_ShortcutItemAssets& theOther, bool theOverride);
+
+  /*! \param theOverride If true, values of theOther override conflicting values of this. */
+  virtual void merge(SUIT_ShortcutItemAssets&& theOther, bool theOverride);
+
+private:
+  bool fromJSONOtherProps(const QJsonObject& theJsonObject);
+  void toJSONVirtual(QJsonObject& oJsonObject) const;
+
+public:
+  /*!
+  \param theLang If empty, current language is requested.
+  \returns Requested name or name in EN, if requested language is absent. If EN is absent - inModuleID. */
+  const QString& bestName(const QString& theLang = QString()) const;
+
+  /*! \brief Composed as <depth_1_item.bestName>/...<depth_N_item.bestName>.../<this->bestName>. Module name is not included. */
+  const QString& bestPath(const QString theLang = QString()) const;
+
+  QString description() const;
+
+  bool isAction() const;
+  bool isFolder() const;
+  std::shared_ptr<SUIT_ShortcutAssets> parent() const;
+  std::shared_ptr<SUIT_ShortcutModuleAssets> module() const;
+
+  /*! \brief Even if SUIT_ShortcutItemAssets is not action, its ID is composed in the same way. */
+  QString actionID() const;
+
+  /*! \returns myIcon, if !myIcon.isNull(). Otherwise returns appropriate default icon. */
+  const QIcon& icon() const;
+
+private:
+  std::weak_ptr<SUIT_ShortcutAssets> myParent;
+
+  bool myIsAction;
+
+public:
+  const QString myIDLastToken;
+  const QString myInModuleID; // Composed as <depth_1_item.myIDLastToken>/...<depth_N_item.myIDLastToken>.../<this->myIDLastToken>. Synonym for inModuleActionID.
+
+private:
+  const int myDepth;
+
+  /** {lang, bestPath}[] */
+  mutable std::map<QString, QString> myBestPaths;
 };
 
 
@@ -190,58 +397,82 @@ struct SUIT_EXPORT SUIT_ActionAssets
   \class SUIT_ShortcutMgr
   \brief Handles action shortcut customization.
 
-  IDENTIFIED ACTIONS/SHORTCUTS
+  The manager is designed to detect shortcut conflicts even for actions, which are not constructed yet.
+  To do this, data about action shortcuts should be available for the manager prior to construction of actions.
 
-  Register actions under action IDs. Set shortcuts, which are [action ID]<->[key sequence] mappings.
-  Every time an action is registered or a shorcut is set, if there are an action and a shortcut,
-  which are mapped to the same action ID, the action is bound to the key sequence of the shortcut.
-  Action IDs are also used to (de)serialize shortcut settings.
-  Several QActions may be registered under the same ID.
+  SHORTCUT PREFERENCES
+  The data about shortcuts is stored in preference files (see SUIT_ShortcutMgr::setShortcutsFromPreferences()) as maps [action ID]->[key sequence].
+  It means, actions should have valid IDs (see SUIT_ShortcutMgr::isActionIDValid(const QString&)).
+  Let's call such action identified, and actions with invalid IDs anonymous.
+  Action IDs are language-independent.
 
-  Most of actions are intercepted on creation in SUIT_ShortcutMgr:eventFilter(QObject* theObject, QEvent* theEvent).
-  If an intercepted action is instance of QtxAction, it is registered automatically.
-  Since non-QtxActions have no member ID(), SUIT_ShortcutMgr is unable to register them automatically
-  in SUIT_ShortcutMgr::eventFilter(). Thus, every non-QtxAction should be
-  passed to SUIT_ShortcutMgr::registerAction(const QString& theActionID, QAction* theAction).
+  After an action is constructed (even if it is anonymous), it must be registered by the manager.
+  If the action is instance of QtxAction, the manager registers it automatically (see SUIT_ShortcutMgr:eventFilter(QObject* theObject, QEvent* theEvent)).
+  Otherwise SUIT_ShortcutMgr::registerAction(const QString& theActionID, QAction* theAction) must be called.
 
-  Action ID is application-unique must be composed as <moduleID>/<inModuleActionID>.
-  If an action belongs to a desktop or is available even if no module is active (e.g. 'Save As'),
-  use empty string as <moduleID>. Let's call such actions as root actions.
+  Upon registration of an action, the manager checks, if a key sequence, assigned to the action, clashes with other shortcuts.
+  If it does, and the action is anonymous - empty keysequnce is set to the action.
+  If the action is identified - a keysequence from preferences is set to the action,
+  even if incoming key sequence does not clash with other shortcuts. Absence of an action ID in preference files means
+  default key sequence is empty.
 
-  There is a need to keep multiple actions, which do the same from user' perspective,
-  bound to the same key sequence. E.g. 'Front view'. Let's call such set of actions as meta-action.
-  Actions of a meta-action may belong to different modules, and/or there may be several actions
-  of the same meta-action in the same module. <inModuleActionID> of all members of a meta-action
-  must be the same and start with "#".
-  Meta-action is root action when it comes to checking for conflicts.
-  Shortcuts of meta-actions are (de)serialized to the same section of preference files as root shortcuts.
+  If shortcuts are changed (via SUIT_ShortcutMgr::mergeShortcutContainer(const SUIT_ShortcutContainer&, bool, bool, bool)),
+  the manager serizalizes the changes into user preference file and sets new key sequences to according registered actions.
 
-  <inModuleActionID> can contain several "/". Go to \ref isInModuleActionIDValid(const QString&) for details.
-  You can refer to multiple actions, whose <inModuleActionID> starts with the prefix.
+  ACTION ASSETS
+  Users are not aware about action IDs, since GUI normally shows user-friendly data: action names, tooltips and icons. Let's call the data assets.
+  Assets of an action should be available for GUI for shortcut presenting/editing (let's call the piece of GUI Shortcut Editor) even before
+  the action is constructed. The assets should be provided is asset files (see SUIT_ShortcutMgr::setAssetsFromResources(QString)).
 
-  Only one module can be active at instance. So a key sequence must be unique within a joined temporary table of
-  root and active module shortcuts. An action is allowed to be bound with only key sequence.
+  CONFLICT DETECTION
+    IDENTIFIED ACTIONS/SHORTCUTS
+    Let's call GUI module root module.
+    Only one module, besides the root module, can be active at instance. So a key sequence must be unique within a joined temporary table of
+    root and active module shortcuts. An action is allowed to be bound with only key sequence. Multiple actions may be registered under the same ID.
 
-  ANONYMOUS ACTIONS/SHORTCUTS
+    Action ID is application-unique, language-independent and must be composed as <moduleID>/<inModuleActionID>.
+    If an action belongs to root module (e.g. 'Save As'), use empty string as <moduleID>.
+    Let's call actions with empty module ID root actions.
 
-  Actions without action IDs or with invalid ones are called anonymous actions.
-  All anonymous actions with non-empty shortcut key sequences are registered by SUIT_ShortcutMgr.
-  If a shortcut for an anonymous action clashes with a shortcut for an action with defined ID (identified action/shortcut),
-  the shortcut for the anonymous action is disabled, but [the anonymous action, the hard-coded key sequence] pair
-  remains within the SUIT_ShortcutMgr. If user redefines key sequences for identified actions,
-  and the clash is gone, SUIT_ShortcutMgr enables back the shortcut for the anonymous action.
+    <inModuleActionID> can be composed of several tokens, delimited by "/". See SUIT_ShortcutMgr::isInModuleActionIDValid(const QString&) for details.
+    Shortcut Editor considers <inModuleActionID> as "path":
+    <inModuleActionID> without the last token is inModuleID of parent folder or action-folder (see SUIT_ShortcutMgr::setAssetsFromResources(QString)).
 
-  WARNING!
-  Avoid assigning shortcuts to instances of QAction and all its descendants directly.
-  (1) Key sequence being bound directly to any registered/intercepted action with valid ID,
-      if the key sequence does not conflict with shortcuts kept by SUIT_ShortcutMgr,
-      is added to the manager and appears in user preference file. If it does conflict,
-      it is reassigned with a key sequence from preference files or
-      disabled and added to user preference files (if the files have no shortcut for the action).
-  (2) It is not possible to reassign key sequences for anonymous actions using the Shortcut Editor GUI.
-      It is not possible to always warn user, if a key sequence, he assigns to an identified action,
-      disables an anonymous shortcut, because SUIT_ShortcutMgr has no data about anonymous actions until they appear in runtime.
-      To prevent the user from relying on such warnings, they are completely disabled.
+      META-ACTIONS
+      There is a need to keep actions from different modules, which do the same from user' perspective,
+      bound to the same key sequence. E.g. 'Front view' or 'Undo'. Let's call such set of actions meta-action.
+      <inModuleActionID> of all members of a meta-action must be the same and the last token of the ID must start with "#".
+      Meta-action is root action, when it comes to checking for conflicts.
+      Shortcuts of meta-actions are (de)serialized to the same section of preference files as root shortcuts.
+      Assets of meta-actions should be placed in asset files of root (GUI) module.
+
+    ANONYMOUS ACTIONS/SHORTCUTS
+    Actions without action IDs or with invalid ones are called anonymous actions.
+    All anonymous actions with non-empty shortcut key sequences are registered by SUIT_ShortcutMgr.
+    If a shortcut for an anonymous action clashes with a shortcut for an action with defined ID (identified action/shortcut),
+    the shortcut for the anonymous action is disabled, but [the anonymous action, the hard-coded key sequence] pair
+    remains within the SUIT_ShortcutMgr. If user redefines key sequences for identified actions,
+    and the clash is gone, SUIT_ShortcutMgr enables back the shortcut for the anonymous action.
+
+    It is not possible to reassign key sequences for anonymous actions using the Shortcut Editor GUI.
+    It is not possible to always warn users, if a key sequence, they assigns to an identified action,
+    disables an anonymous shortcut, because SUIT_ShortcutMgr has no data about anonymous actions until they appear in runtime.
+    To prevent the user from relying on such warnings, they are completely disabled.
+
+  HOW TO USE
+  1) Come up with valid action ID for an action and:
+    1A) Pass the ID as an agrument to constructor of QtxAction; or
+    1B) Call SUIT_ShortcutMgr::registerAction(const QString& theActionID, QAction* theAction); or
+    1C) Construct the action using SUIT_ShortcutMgr::createAction(..). The latest option allows to avoid duplication of action assets in *.ts files.
+  2) Add action assets in asset files.
+  3) Add action default keysequence to default preference file.
+
+  DEVELOPMENT
+  There are two macros: SHORTCUT_MGR_DBG and SHORTCUT_MGR_DEVTOOLS.
+  SHORTCUT_MGR_DBG enables shortcut-related debug output.
+  SHORTCUT_MGR_DEVTOOLS enables DevTools class. It assists in making anonymous actions identified and composing asset and default preference files.
+
+  More details can be found in the "SUIT_ShortcutMgr. ReadMe.md".
 */
 class SUIT_EXPORT SUIT_ShortcutMgr: public QObject
 {
@@ -273,10 +504,14 @@ public:
   Empty module ID is valid - it is root module ID. */
   static bool isModuleIDValid(const QString& theModuleID);
 
+  static bool isInModuleIDTokenValid(const QString& theInModuleIDToken);
+
+  static bool isInModuleIDTokenMeta(const QString& theInModuleIDToken);
+
   /*! \brief Valid in-module action ID may consist of several tokens, separated by "/":
   <token_0>/<token_1>...<token_N>/<token_N-1>.
   Each <token> must be non-empty and be equal to QString(<token>).simplified().
-  Empty or "#" in-module action ID is not valid. */
+  Token "#" is also not valid, since the character in the beginning of the last token means action is meta-action. */
   static bool isInModuleActionIDValid(const QString& theInModuleActionID);
 
   /*! \returns true, is theInModuleActionID starts with "#". */
@@ -287,11 +522,17 @@ public:
   \returns { _ , "" }, if theActionID is invalid. */
   static std::pair<QString, QString> splitIntoModuleIDAndInModuleID(const QString& theActionID);
 
+  /*! \brief Does not check validity. */
+  static QStringList splitIntoTokens(const QString& theRelativeID);
+
+  /*! \brief Does not check validity. */
+  static QString joinIntoRelativeID(const QStringList& theTokens);
+
   /*! See \ref splitIntoModuleIDAndInModuleID(const QString&). */
   static bool isActionIDValid(const QString& theActionID);
 
   /*! \brief Creates application-unique action ID. Reverse to splitIntoModuleIDAndInModuleID.
-  \returns Emppty string, if either theModuleID or theInModuleActionID is invalid*/
+  \returns Empty string, if either theModuleID or theInModuleActionID is invalid*/
   static QString makeActionID(const QString& theModuleID, const QString& theInModuleActionID);
 
   /*! \brief Sets all shortcuts from preferences to theContainer. Incoming shortcuts override existing ones.
@@ -301,12 +542,14 @@ public:
   \param theDefaultOnly If true, user preferences are ignored and only default preferences are used. */
   static void fillContainerFromPreferences(SUIT_ShortcutContainer& theContainer, bool theDefaultOnly);
 
-  /*! \brief Checks the resource manager directly.
-  \returns {assetsExist, assets}. */
-  static std::pair<bool, SUIT_ActionAssets> getActionAssetsFromResources(const QString& theActionID);
+  /*! \brief Returns item assets as they are in asset files.
+  Returned module assets is necessary to keep memory ownership of theAction ancestors. The module assets contain only ancestors of theActionID.
+  \param theLangs If empty, all languages is parsed. */
+  static std::pair<std::shared_ptr<SUIT_ShortcutModuleAssets>, std::shared_ptr<SUIT_ShortcutItemAssets>>
+  getActionAssetsFromResources(const QString& theActionID, const std::set<QString>& theLangs = {});
 
   /*! \returns Language, which is set in resource manager. */
-  static QString getLang();
+  static QString currentLang();
 
 
   /*! \brief Add theAction to map of managed actions. */
@@ -362,7 +605,7 @@ public:
   const SUIT_ShortcutContainer& getShortcutContainer() const;
 
   /*! \brief Does not perform validity checks on theModuleID and theInModuleActionID. */
-  void mergeShortcutContainer(const SUIT_ShortcutContainer& theContainer, bool theOverride = true, bool theTreatAbsentIncomingAsDisabled = false);
+  void mergeShortcutContainer(const SUIT_ShortcutContainer& theContainer, bool theOverride = true, bool theTreatAbsentIncomingAsDisabled = false, bool theSaveToPreferences = true);
 
   /*! \brief Get a key sequence mapped to the action. */
   const QKeySequence& getKeySequence(const QString& theModuleID, const QString& theInModuleActionID) const;
@@ -377,23 +620,24 @@ public:
   if the module is root (theModuleID is empty) - returns all module IDs, otherwise returns ["", theModuleID]. */
   std::set<QString> getIDsOfInterferingModules(const QString& theModuleID) const;
 
-  /*! \returns assets, which describe module's header, not its content. */
-  std::shared_ptr<const SUIT_ActionAssets> getModuleAssets(const QString& theModuleID) const;
+  std::shared_ptr<const SUIT_ShortcutModuleAssets> getModuleAssets(const QString& theModuleID) const;
+  const std::map<QString, std::shared_ptr<SUIT_ShortcutModuleAssets>>& getModuleAssets() const { return myModuleAssets; }
 
-  /*! \returns assets, which describe modules' headers, not their content. */
-  std::map<QString, std::shared_ptr<SUIT_ActionAssets>> getModuleAssets() const { return myModuleAssets; }
-
-  /*! \brief Retrieves module name, if the asset was loaded using \ref setAssetsFromResources(). If theLang is empty, it is effectively current language. */
+  /*! \brief Retrieves module name, if the asset was loaded using \ref setAssetsFromResources(). If theLang is empty, it is current language. */
   QString getModuleName(const QString& theModuleID, const QString& theLang = "") const;
 
-  std::shared_ptr<const SUIT_ActionAssets> getActionAssets(const QString& theModuleID, const QString& theInModuleActionID) const;
+  std::shared_ptr<const SUIT_ShortcutItemAssets> getActionAssets(const QString& theModuleID, const QString& theInModuleActionID, bool theTryToCreateRuntimeAssetsIfAbsent = true) const;
 
-  std::shared_ptr<const SUIT_ActionAssets> getActionAssets(const QString& theActionID) const;
+  std::shared_ptr<const SUIT_ShortcutItemAssets> getActionAssets(const QString& theActionID, bool theTryToCreateRuntimeAssetsIfAbsent = true) const;
 
-  std::map<QString, std::map<QString, std::shared_ptr<SUIT_ActionAssets>>> getActionAssets() const { return myActionAssets; }
+  /*! \brief Creates assets using action instance fields, if corresponding action is registered. */
+  std::shared_ptr<const SUIT_ShortcutItemAssets> createRuntimeActionAssets(const QString& theModuleID, const QString& theInModuleActionID) const;
 
-  /*! \brief Retrieves action name, if the asset was loaded using \ref setAssetsFromResources(). If theLang is empty, it is effectively current language. */
+  /*! \brief Retrieves action name, if the asset is myModuleAssets. Name of module is not included. If theLang is empty, it is current language. */
   QString getActionName(const QString& theModuleID, const QString& theInModuleActionID, const QString& theLang = "") const;
+
+  /*! \brief Creates an action and sets asset data to the action. */
+  QtxAction* createAction(QObject* theParent, QObject* theReceiver, const char* theReceiverSlot, const QString& theActionID, const bool theIsToggle = false) const;
 
 private slots:
   /*!
@@ -415,7 +659,7 @@ private:
 
   /*! \brief Set shortcuts from preference files. The method is intended to be called before any calls to setShortcut() or mergeShortcutContainer().
   Definition of this method assumes, that shortcut settings are serialized as prerefence entries {name=<inModuleActionID>, val=<keySequence>}
-  in dedicated section for each module, with names of sections being composed as "shortcuts:<moduleID>".
+  in dedicated section for each module, with names of sections being composed as "shortcuts_vA1.0:<moduleID>".
 
   E.g. in case of XML file it may look like this:
   <!--
@@ -425,25 +669,24 @@ private:
     ...
   </section>
   -->
-  <section name="shortcuts:">
-    <parameter name="TOT_DESK_FILE_NEW" value="Ctrl+N"/>
-    <parameter name="TOT_DESK_FILE_OPEN" value="Ctrl+O"/>
-    <parameter name="#General/Show object(s)" value="Ctrl+Alt+S"/>
-    <parameter name="#General/Hide object(s)" value="Ctrl+Alt+H"/>
-    <parameter name="#Viewers/Back view" value="Ctrl+Alt+B"/>
-    <parameter name="#Viewers/Front view" value="Ctrl+Alt+F"/>
+  <section name="shortcuts_vA1.0:">
+    <parameter name="AboutDialog" value="Alt+Shift+A"/>
+    <parameter name="Edit/#Clipboard_Copy" value="Ctrl+C"/>
+    <parameter name="Edit/#Clipboard_Paste" value="Ctrl+V"/>
+    <parameter name="File/New" value="Ctrl+N"/>
+    <parameter name="File/Open" value="Ctrl+O"/>
   </section>
-   <section name="shortcuts:GEOM">
-    <parameter name="Isolines/Increase number" value="Meta+I"/>
-    <parameter name="Isolines/Decrease number" value="Meta+D"/>
-    <parameter name="Transparency/Increase" value="Meta+Y"/>
-    <parameter name="Transparency/Decrease" value="Meta+T"/>
+  <section name="shortcuts_vA1.0:SHAPER">
+    <parameter name="Part/Dump" value=""/>
+    <parameter name="Part/Parameter" value=""/>
+    <parameter name="Part/ParametersMgr" value=""/>
+    <parameter name="Sketch" value="Ctrl+4"/>
+    <parameter name="Sketch/SketchPoint" value="Ctrl+Shift+*"/>
+    <parameter name="Sketch/SketchLine" value="Ctrl+Shift+_"/>
   </section>
 
   Empty inModuleActionIDs are ignored.
-
-  nb! For any theQtxAction you wish user be able to assign it to a shortcut,
-  add theQtxAction.ID() to default resource files (you can map it to no key sequence).*/
+  */
   void setShortcutsFromPreferences();
 
   /*! \brief Writes shortcuts to preference files.
@@ -455,26 +698,58 @@ private:
   OldKeySequences are ignored. */
   static void saveShortcutsToPreferences(const std::map<QString, std::map<QString, std::pair<QKeySequence, QKeySequence>>>& theShortcutsInversed);
 
-  /*! Fills myActionAssets from asset files in theLanguage.
-  \param theLanguage If default, fills assets in current language.
-  If an asset in requested language is not found, seeks for the asset EN in and then in FR.
+  /*! Fills myModuleAssets from asset files in theLanguage and EN.
+  \param theLanguage If empty, fills assets in current language and EN.
 
   Asset files must be structured like this:
   {
-    ...
-    actionID : {
+    moduleID: {
+      "iconPath": iconPath,
       "langDependentAssets": {
         ...
         lang: {
-          "name": name,
-          "tooltip": tooltip
+          "name": moduleName,
+          "tooltip": moduleTooltip
         },
         ...
       },
-      "iconPath": iconPath
-    },
-    ...
+      "children": {
+        ...
+        actionA_IDLastToken : {
+          "iconPath": iconPath,
+          "langDependentAssets": {
+            ...
+            lang: {
+              "name": actionName,
+              "tooltip": actionTooltip
+            },
+            ...
+          },
+          "children": { // The action has nested actions.
+            actionB_IDLastToken: {
+            ...
+            }
+          }
+        },
+        ...
+        folderC_IDLastToken: {
+          "isAction": false, // The folder is pure folder.
+          "iconPath": iconPath,
+          "langDependentAssets": {
+            ...
+          },
+          children: {
+            ...
+          }
+        }
+        ...
+      }
+    }
   }
+
+  The JSON above describes an action-folder with ID "moduleID/actionA_IDLastToken" and a pure folder with ID "moduleID/folderC_IDLastToken".
+  The action-folder has a nested action with "moduleID/actionA_IDLastToken//actionB_IDLastToken".
+  Requirements for action' and folder' IDs are the same.
   */
   void setAssetsFromResources(QString theLanguage = QString());
 
@@ -500,11 +775,11 @@ private:
   Sets of moduleIDs and inModuleActionIDs may NOT be equal for myActions and myShortcutContainer.
   */
 
-  /** { moduleID, {inModuleActionID, assets}[] }[] */
-  std::map<QString, std::map<QString, std::shared_ptr<SUIT_ActionAssets>>> myActionAssets;
+  /** {moduleID, moduleAssets}[]. Structured assets: module assets refer to folders and actions, folders and actions refer to nested ones, etc. */
+  mutable std::map<QString, std::shared_ptr<SUIT_ShortcutModuleAssets>> myModuleAssets;
 
-  /** {moduleID, assets}[] */
-  mutable std::map<QString, std::shared_ptr<SUIT_ActionAssets>> myModuleAssets;
+  /** True, if SUIT_ShortcutMgr::setAssetsFromResources(QString) was called. */
+  bool myAssetsLoaded;
 
   mutable std::set<QString> myActiveModuleIDs;
 
@@ -518,75 +793,9 @@ private:
 };
 
 
-/*!
-  \class SUIT_SentenceMatcher
-  \brief Approximate string matcher, treats strings as sentences composed of words.
-*/
-class SUIT_EXPORT SUIT_SentenceMatcher
-{
-public:
-  /*! Default config:
-    Exact word order = false;
-    Fuzzy words = true;
-    Case sensitive = false;
-    Query = ""; // matches nothing.
-  */
-  SUIT_SentenceMatcher();
-
-  void setUseExactWordOrder(bool theOn);
-  void setUseFuzzyWords(bool theOn);
-  void setCaseSensitive(bool theOn);
-  inline bool isCaseSensitive() const { return myIsCaseSensitive; };
-
-  /*! \param theQuery should not be regex. */
-  void setQuery(QString theQuery);
-
-  inline const QString& getQuery() const { return myQuery; };
-
-  /*! \returns match metrics. The metrics >= 0. INF means mismatch.
-  The class is unable to differentiate exact match with some approximate matches! */
-  double match(const QString& theInputString) const;
-
-  /** \brief For debug. */
-  QString toString() const;
-
-private:
-  static bool makePermutatedSentences(const QStringList& theWords, QList<QStringList>& theSentences);
-  static void makeFuzzyWords(const QStringList& theWords, QStringList& theFuzzyWords);
-
-  /*! \returns number of characters in matched words. The number >= 0. */
-  static int matchWithSentenceIgnoreEndings(const QString& theInputString, const QStringList& theSentence, bool theCaseSensitive);
-  /*! \returns number of characters in matched words. The number >= 0. */
-  static int matchWithSentencesIgnoreEndings(const QString& theInputString, const QList<QStringList>& theSentences, bool theCaseSensitive);
-
-  /*! \returns number of characters in matched words. The number >= 0. */
-  static int matchAtLeastOneWord(const QString& theInputString, const QStringList& theWords, bool theCaseSensitive);
-
-  /*! \returns number of characters in matched words. The number >= 0. */
-  static int match(
-    const QString& theInputString,
-    const QStringList& theSentence,
-    bool theCaseSensitive
-  );
-
-  /*! \returns number of characters in matched words. The number >= 0. */
-  static int match(
-    const QString& theInputString,
-    const QList<QStringList>& theSentences,
-    bool theCaseSensitive
-  );
-
-  bool myUseExactWordOrder; // If false, try to match with sentences, composed of query's words in different orders.
-  bool myUseFuzzyWords; // Try to match with sentences, composed of query's truncated words.
-  bool myIsCaseSensitive;
-  QString myQuery;
-
-  QStringList myWords; // It is also original search sentence.
-  QList<QStringList> myPermutatedSentences;
-
-  QStringList myFuzzyWords; // Regexes.
-  QList<QStringList> myFuzzyPermutatedSentences;
-};
+namespace SUIT_tools {
+  class SUIT_SentenceMatcher;
+}
 
 
 /*!
@@ -598,7 +807,7 @@ class SUIT_EXPORT SUIT_ActionSearcher
 public:
   enum MatchField {
     ID,
-    Name,
+    Name, // Also matches with path, composed as <depth_1_item.name>/...<depth_N_item.name>.../<actionItem.name>.
     ToolTip,
     KeySequence
   };
@@ -606,12 +815,12 @@ public:
   class AssetsAndSearchData
   {
   public:
-    AssetsAndSearchData(std::shared_ptr<const SUIT_ActionAssets> theAssets = nullptr, double theMatchMetrics = std::numeric_limits<double>::infinity());
+    AssetsAndSearchData(std::shared_ptr<const SUIT_ShortcutItemAssets> theAssets = nullptr, double theMatchMetrics = std::numeric_limits<double>::infinity());
 
     void setMatchMetrics(double theMatchMetrics);
     double matchMetrics() const { return myMatchMetrics; };
 
-    std::shared_ptr<const SUIT_ActionAssets> myAssets;
+    std::shared_ptr<const SUIT_ShortcutItemAssets> myAssets;
 
     void toJSON(QJsonObject& oJsonObject) const;
     QString toString() const;
@@ -621,35 +830,50 @@ public:
     double myMatchMetrics;
   };
 
+
+  static double matchKeySequenceString(const QString& theQuery, const QString& theKeySequence);
+
   /*! Default config:
       Included modules' IDs = { ROOT_MODULE_ID };
       Include disabled actions = false;
       Fields to match = { Name, Tooltip };
       Case sensitive = false;
       Fuzzy matching = true;
-      Query = ""; // matches everything.
+      Query = ""; // matches nothing.
   */
   SUIT_ActionSearcher();
   SUIT_ActionSearcher(const SUIT_ActionSearcher&) = delete;
   SUIT_ActionSearcher& operator=(const SUIT_ActionSearcher&) = delete;
-  virtual ~SUIT_ActionSearcher() = default;
+  virtual ~SUIT_ActionSearcher();
 
-  /*! \returns true, if set of results is changed. */
-  bool setIncludedModuleIDs(std::set<QString> theIncludedModuleIDs);
+  /*! \returns true, if set of results is changed.
+  \param doNotUpdateResults Set to true to initialize the instance without unnececessary computations. */
+  bool setIncludedModuleIDs(std::set<QString> theIncludedModuleIDs, bool doNotUpdateResults = false);
 
-  /*! \returns true, if set of results is changed. */
-  bool includeDisabledActions(bool theOn);
+  /*! \returns true, if set of results is changed.
+  \param doNotUpdateResults Set to true to initialize the instance without unnececessary computations. */
+  bool includeDisabledActions(bool theOn, bool doNotUpdateResults = false);
   inline bool areDisabledActionsIncluded() const {return myIncludeDisabledActions;};
 
-  /*! \returns true, if set of results is changed. */
-  bool setFieldsToMatch(const std::set<SUIT_ActionSearcher::MatchField>& theFields);
+  /*! \returns true, if set of results is changed.
+  \param doNotUpdateResults Set to true to initialize the instance without unnececessary computations. */
+  bool setFieldsToMatch(const std::set<SUIT_ActionSearcher::MatchField>& theFields, bool doNotUpdateResults = false);
 
-  /*! \returns true, if set of results is changed. */
-  bool setCaseSensitive(bool theOn);
+  /*! \returns { true, _ } if set of results is changed; { _ , true } if matching metrics is changed for at least one result.
+  \param theKeySequenceGetter getKeySequence(theModuleID, theInModuleActionID). If empty, a default getter, retrieving key sequence from ShortcutMgr, is set.
+  \param doNotUpdateResults Set to true to initialize the instance without unnececessary computations. */
+  std::pair<bool, bool> setKeySequenceGetter(
+    const std::function<QString(const QString&, const QString&)>& theKeySequenceGetter = std::function<QString(const QString&, const QString&)>(),
+    bool doNotUpdateResults = false
+  );
+
+  /*! \returns true, if set of results is changed.
+  \param doNotUpdateResults Set to true to initialize the instance without unnececessary computations. */
+  bool setCaseSensitive(bool theOn, bool doNotUpdateResults = false);
 
   /*! \returns true, if set of results is changed. */
   bool setQuery(const QString& theQuery);
-  inline const QString& getQuery() const {return myMatcher.getQuery();};
+  inline const QString& getQuery() const;
 
   const std::map<QString, std::map<QString, SUIT_ActionSearcher::AssetsAndSearchData>>& getSearchResults() const;
 
@@ -667,7 +891,7 @@ private:
   \returns True, if set of results is extended. */
   bool extendResults();
 
-  double matchAction(const QString& theModuleID, const QString& theInModuleActionID, std::shared_ptr<const SUIT_ActionAssets> theAssets);
+  double matchAction(const SUIT_ShortcutItemAssets& theAssets);
 
   QString toString() const;
 
@@ -676,7 +900,10 @@ private:
   bool myIncludeDisabledActions;
 
   std::set<SUIT_ActionSearcher::MatchField> myFieldsToMatch;
-  SUIT_SentenceMatcher myMatcher;
+  ::SUIT_tools::SUIT_SentenceMatcher* myMatcher;
+
+  /* getKeySequence(theModuleID, theInModuleActionID) */
+  std::function<QString(const QString&, const QString&)> myKeySequenceGetter;
 
   /* { moduleID, {inModuleActionID, assetsAndSearchData}[] }[]. */
   std::map<QString, std::map<QString, SUIT_ActionSearcher::AssetsAndSearchData>> mySearchResults;
@@ -687,4 +914,4 @@ private:
 #pragma warning( default: 4251 )
 #endif
 
-#endif
+#endif //SUIT_SHORTCUTMGR_H

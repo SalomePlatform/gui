@@ -455,9 +455,9 @@ QtxPopupMgr* LightApp_Module::popupMgr()
 
     QAction
       *disp = createAction( -1, tr( "TOP_SHOW" ), p, tr( "MEN_SHOW" ), tr( "STB_SHOW" ),
-                            0, d, false, this, SLOT( onShowHide() ), QString("#General/Object(s)/Show") ),
+                            0, d, false, this, SLOT( onShowHide() ), QString("Edit/#Object_Show") ),
       *erase = createAction( -1, tr( "TOP_HIDE" ), p, tr( "MEN_HIDE" ), tr( "STB_HIDE" ),
-                             0, d, false, this, SLOT( onShowHide() ) , QString("#General/Object(s)/Hide") ),
+                             0, d, false, this, SLOT( onShowHide() ) , QString("Edit/#Object_Hide") ),
       *dispOnly = createAction( -1, tr( "TOP_DISPLAY_ONLY" ), p, tr( "MEN_DISPLAY_ONLY" ), tr( "STB_DISPLAY_ONLY" ),
                                 0, d, false, this, SLOT( onShowHide() ) ),
       *eraseAll = createAction( -1, tr( "TOP_ERASE_ALL" ), p, tr( "MEN_ERASE_ALL" ), tr( "STB_ERASE_ALL" ),

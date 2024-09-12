@@ -256,51 +256,53 @@
   <!--Salome shortcut settings
        See SUIT_ShortcutMgr for details.
   -->
-  <section name="shortcuts:">
+  <section name="shortcuts_vA1.0:">
     <!--Actions of these shortcuts are available even if no module is active-->
-    <parameter name="PRP_DESK_FILE_LOAD_SCRIPT" value="Ctrl+T"/>
-    <parameter name="PRP_DESK_FILE_DUMP_STUDY" value="Ctrl+D"/>
-    <parameter name="PRP_DESK_CONNECT" value="Ctrl+L"/>
-    <parameter name="PRP_DESK_DISCONNECT" value="Ctrl+U"/>
-    <parameter name="PRP_DESK_CATALOG_GENERATOR" value="Alt+Shift+G"/>
-    <parameter name="PRP_DESK_PREFERENCES" value="Ctrl+P"/>
-    <parameter name="PRP_RENAME" value="Alt+Shift+R"/>
-    <parameter name="PRP_CLOSE" value="Ctrl+F4"/>
-    <parameter name="PRP_FULLSCREEN" value="F11"/>
-    <parameter name="PRP_DESK_WINDOW_HSPLIT" value="Alt+Shift+H"/>
-    <parameter name="PRP_DESK_WINDOW_VSPLIT" value="Alt+Shift+V"/>
-    <parameter name="PRP_DESK_VIEW_STATUSBAR" value="Alt+Shift+S"/>
-    <parameter name="PRP_DESK_HELP_ABOUT" value="Alt+Shift+A"/>
-    <parameter name="TOT_DESK_FILE_NEW" value="Ctrl+N"/>
-    <parameter name="TOT_DESK_FILE_OPEN" value="Ctrl+O"/>
-    <parameter name="TOT_DESK_FILE_CLOSE" value="Ctrl+W"/>
-    <parameter name="TOT_DESK_FILE_EXIT" value="Ctrl+Q"/>
-    <parameter name="TOT_DESK_FILE_SAVE" value="Ctrl+S"/>
-    <parameter name="TOT_DESK_FILE_SAVEAS" value="Ctrl+Shift+S"/>
-    <parameter name="#TOT_DESK_EDIT_COPY" value="Ctrl+C"/>
-    <parameter name="TOT_DESK_EDIT_PASTE" value="Ctrl+V"/>
-    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_0" value="Alt+G"/>
-    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_1" value="Alt+P"/>
-    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_2" value="Alt+O"/>
-    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_3" value="Alt+K"/>
-    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_4" value="Alt+S"/>
-    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_5" value="Alt+C"/>
-    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_6" value="Alt+A"/>
-    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_7" value="Alt+Y"/>
-    <parameter name="PRP_DESK_FIND_ACTION" value="Ctrl+Shift+Space"/>
-    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_8" value="Alt+3"/>
-    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_9" value="Alt+Q"/>
-    <parameter name="#General/Object(s)/Show" value="Ctrl+Alt+S"/>
-    <parameter name="#General/Object(s)/Hide" value="Ctrl+Alt+H"/>
-    <parameter name="#Viewers/View/Set X+" value="Ctrl+Alt+B"/>
-    <parameter name="#Viewers/View/Set X-" value="Ctrl+Alt+F"/>
-    <parameter name="#Viewers/View/Set Y+" value="Ctrl+Alt+J"/>
-    <parameter name="#Viewers/View/Set Y-" value="Ctrl+Alt+G"/>
-    <parameter name="#Viewers/View/Set Z+" value="Ctrl+Alt+O"/>
-    <parameter name="#Viewers/View/Set Z-" value="Ctrl+Alt+P"/>
-    <parameter name="#Viewers/View/Rotate anticlockwise" value=""/>
-    <parameter name="#Viewers/View/Rotate clockwise" value=""/>
-    <parameter name="#Viewers/View/Reset" value="Ctrl+Alt+E"/>
+    <parameter name="AboutDialog" value="Alt+Shift+A"/>
+    <parameter name="Edit/#Clipboard_Copy" value="Ctrl+C"/>
+    <parameter name="Edit/#Clipboard_Paste" value="Ctrl+V"/>
+    <parameter name="Edit/#Object_Hide" value="Ctrl+Alt+H"/>
+    <parameter name="Edit/#Object_Show" value="Ctrl+Alt+S"/>
+    <parameter name="Edit/#Redo" value="Ctrl+Shift+Z"/>
+    <parameter name="Edit/#Undo" value="Ctrl+Z"/>
+    <parameter name="File/Close" value="Ctrl+W"/>
+    <parameter name="File/Exit" value="Ctrl+Q"/>
+    <parameter name="File/New" value="Ctrl+N"/>
+    <parameter name="File/Open" value="Ctrl+O"/>
+    <parameter name="File/Preferences" value="Ctrl+P"/>
+    <parameter name="File/Save" value="Ctrl+S"/>
+    <parameter name="File/SaveAs" value="Ctrl+Shift+S"/>
+    <parameter name="File/Study_Connection_Connect" value="Ctrl+L"/>
+    <parameter name="File/Study_Connection_Disconnect" value="Ctrl+U"/>
+    <parameter name="File/Study_ScriptPy_DumpTo" value="Ctrl+D"/>
+    <parameter name="File/Study_ScriptPy_LoadFrom" value="Ctrl+T"/>
+    <parameter name="Tools/CatalogGenerator" value="Alt+Shift+G"/>
+    <parameter name="Tools/FindAction" value="Ctrl+Shift+Space"/>
+    <parameter name="View/FullScreen" value="F11"/>
+    <parameter name="View/StatusBar_Toggle" value="Alt+Shift+S"/>
+    <parameter name="View/ViewPoint/#Reset" value="Ctrl+Alt+E"/>
+    <parameter name="View/ViewPoint/#RotateAnticlockwise" value=""/>
+    <parameter name="View/ViewPoint/#RotateClockwise" value=""/>
+    <parameter name="View/ViewPoint/#SetDirOX+" value="Ctrl+Alt+B"/>
+    <parameter name="View/ViewPoint/#SetDirOX-" value="Ctrl+Alt+F"/>
+    <parameter name="View/ViewPoint/#SetDirOY+" value="Ctrl+Alt+J"/>
+    <parameter name="View/ViewPoint/#SetDirOY-" value="Ctrl+Alt+G"/>
+    <parameter name="View/ViewPoint/#SetDirOZ+" value="Ctrl+Alt+O"/>
+    <parameter name="View/ViewPoint/#SetDirOZ-" value="Ctrl+Alt+P"/>
+    <parameter name="Window/Close" value="Ctrl+F4"/>
+    <parameter name="Window/New/ForViewer0" value="Alt+G"/>
+    <parameter name="Window/New/ForViewer1" value="Alt+P"/>
+    <parameter name="Window/New/ForViewer2" value="Alt+O"/>
+    <parameter name="Window/New/ForViewer3" value="Alt+K"/>
+    <parameter name="Window/New/ForViewer4" value="Alt+S"/>
+    <parameter name="Window/New/ForViewer5" value="Alt+C"/>
+    <parameter name="Window/New/ForViewer6" value="Alt+A"/>
+    <parameter name="Window/New/ForViewer7" value="Alt+Y"/>
+    <parameter name="Window/New/ForViewer8" value="Alt+3"/>
+    <parameter name="Window/New/ForViewer9" value="Alt+Q"/>
+    <parameter name="Window/Rename" value="Alt+Shift+R"/>
+    <parameter name="Window/SplitH" value="Alt+Shift+H"/>
+    <parameter name="Window/SplitV" value="Alt+Shift+V"/>
   </section>
   <section name="ExternalBrowser" >
     <!-- External HELP browser settings -->

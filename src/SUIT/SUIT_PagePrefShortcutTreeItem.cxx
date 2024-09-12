@@ -1,12 +1,12 @@
 #include "SUIT_PagePrefShortcutTreeItem.h"
 
-#include "SUIT_ShortcutTree.h"
+#include "SUIT_ShortcutEditor.h"
 #include "SUIT_ShortcutMgr.h"
 
 
 /*!
   \brief Creates preference item for editing of key bindings
-  \param theParent parent preference item. Must not be nullptr.
+  \param theParent Must not be nullptr.
 */
 SUIT_PagePrefShortcutTreeItem::SUIT_PagePrefShortcutTreeItem(QtxPreferenceItem* theParent)
  : QtxPagePrefItem(QString(), theParent)
@@ -25,9 +25,8 @@ SUIT_PagePrefShortcutTreeItem::SUIT_PagePrefShortcutTreeItem(QtxPreferenceItem* 
     }
   }
 
-  SUIT_ShortcutTree* tree = new SUIT_ShortcutTree(container);
-  tree->myModuleIDs = SUIT_ShortcutMgr::get()->getShortcutModuleIDs();
-  setWidget(tree);
+  SUIT_ShortcutTabWidget* tabWidget = new SUIT_ShortcutTabWidget(SUIT_ShortcutMgr::get()->getShortcutModuleIDs(), container);
+  setWidget(tabWidget);
 }
 
 /*!
@@ -37,7 +36,7 @@ SUIT_PagePrefShortcutTreeItem::SUIT_PagePrefShortcutTreeItem(QtxPreferenceItem* 
 */
 void SUIT_PagePrefShortcutTreeItem::retrieve()
 {
-  static_cast<SUIT_ShortcutTree*>(widget())->setShortcutsFromManager();
+  static_cast<SUIT_ShortcutTabWidget*>(widget())->setShortcutsFromManager();
 }
 
 /*!
@@ -47,7 +46,7 @@ void SUIT_PagePrefShortcutTreeItem::retrieve()
 */
 void SUIT_PagePrefShortcutTreeItem::retrieveDefault()
 {
-  static_cast<SUIT_ShortcutTree*>(widget())->setDefaultShortcuts();
+  static_cast<SUIT_ShortcutTabWidget*>(widget())->setDefaultShortcuts();
 }
 
 /*!
@@ -58,7 +57,7 @@ void SUIT_PagePrefShortcutTreeItem::retrieveDefault()
 */
 void SUIT_PagePrefShortcutTreeItem::store()
 {
-  static_cast<SUIT_ShortcutTree*>(widget())->applyChangesToShortcutMgr();
+  static_cast<SUIT_ShortcutTabWidget*>(widget())->applyChangesToShortcutMgr();
 }
 
 /*static*/ std::map<QtxPreferenceItem*, std::weak_ptr<SUIT_ShortcutContainer>> SUIT_PagePrefShortcutTreeItem::shortcutContainers =

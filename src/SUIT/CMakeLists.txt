@@ -55,8 +55,8 @@ SET(_moc_HEADERS
   SUIT_PreferenceMgr.h
   SUIT_SelectionMgr.h
   SUIT_Session.h
+  SUIT_ShortcutEditor.h
   SUIT_ShortcutMgr.h
-  SUIT_ShortcutTree.h
   SUIT_Study.h
   SUIT_TreeModel.h
   SUIT_ViewManager.h
@@ -80,12 +80,17 @@ SET(_other_HEADERS
   SUIT_SmartPtr.h
   SUIT_Tools.h
   SUIT_TreeSync.h
+  Tools/SUIT_extensions.h
+  Tools/SUIT_SentenceMatcher.h
 )
 
 # header files / to install
 SET(suit_HEADERS ${_moc_HEADERS} ${_other_HEADERS})
 
 # --- resources ---
+
+# resource files / to be processed by rcc
+SET(_rcc_RESOURCES SUIT.qrc)
 
 # resource files / to be processed by lrelease
 SET(_ts_RESOURCES
@@ -107,6 +112,9 @@ SET(_other_RESOURCES
 
 # sources / moc wrappings
 QT_WRAP_MOC(_moc_SOURCES ${_moc_HEADERS})
+
+# sources / rcc wrappings
+QT_ADD_RESOURCES(_rcc_SOURCES ${_rcc_RESOURCES})
 
 # sources / static
 SET(_other_SOURCES
@@ -137,18 +145,20 @@ SET(_other_SOURCES
   SUIT_SelectionMgr.cxx
   SUIT_Selector.cxx
   SUIT_Session.cxx
+  SUIT_ShortcutEditor.cxx
   SUIT_ShortcutMgr.cxx
-  SUIT_ShortcutTree.cxx
   SUIT_Study.cxx
   SUIT_Tools.cxx
   SUIT_TreeModel.cxx
   SUIT_ViewManager.cxx
   SUIT_ViewModel.cxx
   SUIT_ViewWindow.cxx
+  Tools/SUIT_extensions.cxx
+  Tools/SUIT_SentenceMatcher.cxx
 )
 
 # sources / to compile
-SET(suit_SOURCES ${_other_SOURCES} ${_moc_SOURCES})
+SET(suit_SOURCES ${_other_SOURCES} ${_moc_SOURCES} ${_rcc_SOURCES})
 
 # --- rules ---
 

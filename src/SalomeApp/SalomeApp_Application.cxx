@@ -344,12 +344,12 @@ void SalomeApp_Application::createActions()
   //! Dump study
   createAction( DumpStudyId, tr( "TOT_DESK_FILE_DUMP_STUDY" ), QIcon(),
                 tr( "MEN_DESK_FILE_DUMP_STUDY" ), tr( "PRP_DESK_FILE_DUMP_STUDY" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onDumpStudy() ), "/PRP_DESK_FILE_DUMP_STUDY" );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onDumpStudy() ), "/File/Study_ScriptPy_DumpTo" );
 
   //! Load script
   createAction( LoadScriptId, tr( "TOT_DESK_FILE_LOAD_SCRIPT" ), QIcon(),
                 tr( "MEN_DESK_FILE_LOAD_SCRIPT" ), tr( "PRP_DESK_FILE_LOAD_SCRIPT" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onLoadScript() ), "/PRP_DESK_FILE_LOAD_SCRIPT" );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onLoadScript() ), "/File/Study_ScriptPy_LoadFrom" );
 
   //! Properties
   createAction( PropertiesId, tr( "TOT_DESK_PROPERTIES" ), QIcon(),
@@ -359,7 +359,7 @@ void SalomeApp_Application::createActions()
   //! Catalog Generator
   createAction( CatalogGenId, tr( "TOT_DESK_CATALOG_GENERATOR" ),  QIcon(),
                 tr( "MEN_DESK_CATALOG_GENERATOR" ), tr( "PRP_DESK_CATALOG_GENERATOR" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onCatalogGen() ), "/PRP_DESK_CATALOG_GENERATOR" );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onCatalogGen() ), "/Tools/CatalogGenerator" );
 
   //! Registry Display
   createAction( RegDisplayId, tr( "TOT_DESK_REGISTRY_DISPLAY" ),  QIcon(),
@@ -369,17 +369,17 @@ void SalomeApp_Application::createActions()
   //! Find action dialog
   createAction( FindActionId, tr( "TOT_DESK_FIND_ACTION" ),  QIcon(),
                 tr( "MEN_DESK_FIND_ACTION" ), tr( "PRP_DESK_FIND_ACTION" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onFindAction() ), "/PRP_DESK_FIND_ACTION" );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onFindAction() ), "/Tools/FindAction" );
 
   createAction( ConnectId, tr( "TOT_DESK_CONNECT_STUDY" ), QIcon(),
-                tr( "MEN_DESK_CONNECT" ), tr( "PRP_DESK_CONNECT" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onLoadDoc() ), "/PRP_DESK_CONNECT" );
+                tr( "MEN_DESK_CONNECT" ), tr( "File/Study_Connection_Connect" ),
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onLoadDoc() ), "/File/Study_Connection_Connect" );
   //no need at this action for mono-study application because study is always exists
   action( ConnectId )->setVisible( false );
 
   createAction( DisconnectId, tr( "TOT_DESK_DISCONNECT_STUDY" ), QIcon(),
                 tr( "MEN_DESK_DISCONNECT" ), tr( "PRP_DESK_DISCONNECT" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onUnloadDoc() ), "/PRP_DESK_DISCONNECT" );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onUnloadDoc() ), "/File/Study_Connection_Disconnect" );
   //no need at this action for mono-study application because study is always exists
   action( DisconnectId )->setVisible( false );
 

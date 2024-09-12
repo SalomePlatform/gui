@@ -1,20 +1,11 @@
  # ShortcutMgr ReadMe
+ At first, read SUIT_ShortcutMgr class documentation in code.
 
-Hot keys must be considered as resources, being shared between all components of an application. E.g. it is unacceptable to have 'Close file' and 'Redo' actions being assigned to the same key sequence. When the SHAPER module is active, the application desktop is active too. The desktop has own hot keys, and they must not interfere with ones of SHAPER. Since the task implies granting users a right to assign shortcuts on their will, the application must track all assigned shortcuts of all modules, prevent intolerable user shortcut modifications and govern actual binding of QActions with key sequences.
+For all identified actions, assets must be placed into asset files. People who do/refine localizations should keep this in mind and also process JSON files, which are referred in resource files in sections `<section name="action_assets">`.
 
-`SUIT_ShortcutMgr` handles shortcuts of SALOME desktop and all modules. It is solely responsible and capable to dynamically bind actions with key sequences and (de)serialize shortcut preferences using `SUIT_ResourceMgr`. `SUIT_ShortcutContainer` encapsulates logics of conflict detecting and resolving. `SUIT_ShortcutTree` widget provides GUI to change shortcut preferences conveniently: it allows to remap plenty of shortcuts without applying, displays conflict-resolving dialog, highlights modifications until they are applied (saved into preference files).
+To alleviate process of composing resource and asset files, a development tool `DevTools` has been made. See documentations of the class in code.
 
-To (de)serialize shortcut preferences without dependence on language environment, shortcuts must be stored as pairs {action ID, key sequence}, where action IDs must be application-unique.
-
-Since desktop shortcuts may also be changed and interfere with shortcuts of modules, `SUIT_ShortcutTree` should always display desktop shortcuts and shortcuts of all modules altogether, even if some modules are inactive. It means, that `SUIT_ShortcutTree` must be fed not only with shortcut data {action ID, key sequence}[], but also with dictionaries {action ID, action name}[]. `SUIT_ShortcutTree` also requires other action assets - tool tip and icon path.
-
-Assets of actions may be retrieved from instances of actions, but there is a pitfall: if a module has not been activated yet, its actions have not been initialized either.
-Qt Linguist is no help in this case too. To retrieve an action name using `QObject::tr(actionID)`, the `tr(const char*)` method must be called with instance of the class, which is designated as a context for the actionID in *.ts files. And contexts are usually descendants of SUIT_Application and CAM_Module. Again, until a module instance is created, there is no way for `SUIT_ShortcutMgr` to get even a name of a context-class, which an action with an ID belongs to, without any additional data. Straightforward mechanism for loading of action assets in advance has been devised: for all actions, which are bound by default or may be bound by user to hotkeys, assets must be placed into asset files. People who do/refine localizations should keep this in mind and also process JSON files, which are referred in resource files in sections `<section name="action_assets">`.
-
-To alleviate process of composing resource and asset files, a development tool `DevTools` has been made. It grabs all shortcuts and assets (except icon path) of intercepted at runtime actions with valid IDs and dumps shortcuts into XML files with identical to project-conventional resource files structure and assets into properly-formatted JSON files. Run modules/features of interest, switch application language, and if IDs or names in the selected language of some actions of the module are not added yet to preference files, these dump files will be appended with new data – shortcuts and assets, if the last ones are provided in *.ts files.
-The tool also logs assets of intercepted actions with invalid IDs. The intent is as follows: run modules/features of interest at several languages in exactly the same sequence of actions, paste content of resulting language-dedicated *.csv files to corresponding sheet of  [“ShortcutMgr. Resource generator.xlsx”](../../tools/DevTools/ShortcutMgr/ShortcutMgr. Resource generator.xlsx). Then come up with proper IDs for the actions, type the action IDs and their module IDs into corresponding columns and take away ready resource and asset items.
-
-Shortcuts and assets for all actions of SHAPER and GEOM and those actions of desktop, which were bound (hardcoded) to non-empty key sequences, have been added to resource files. Now they are available for hot key remapping via GUI, no conflicts guaranteed. Any hardcoded shortcut is disabled, unless the same shortcut persists in resource files.
+Shortcuts and assets for all actions of SHAPER and GEOM and those actions of desktop, which were bound (hardcoded) to non-empty key sequences, have been added to preference and asset files. Now they are available for hot key remapping via GUI, no conflicts guaranteed. A hardcoded shortcut may be changed or disabled, if preference files override its key sequence.
 
 ## Conflicts between shortcuts of desktop and modules, except SHAPER and GEOM
 
@@ -62,7 +53,7 @@ Then help menu has different shortcuts if the application is run in EN or FR.
 2. After every occurrence of `QPushButton` creation type something like this:
 ```
 // Occurrence
-const auto helpButton = new QPushButton(tr("&Help");
+const auto helpButton = new QPushButton(tr("&Help"));
 SUIT_ShortcutMgr::get()->registerButtonActions("/#AltHelp", *helpButton);
 
 ----------------------------------------------------
@@ -74,7 +65,7 @@ void SUIT_ShortcutMgr::registerButtonActions(const QString& theActionID, const Q
 }
 ----------------------------------------------------
 // Resource file
-	<section name="shortcuts:">
+	<section name="shortcuts_vA1.0:">
   		<parameter name="#AltHelp" value="Alt+H"/>
 	</section>
 ```
@@ -82,6 +73,5 @@ Thus, ampersand-shortcuts will appear and be treated in shortcut editor as regul
 If the second option is preferable, should different ampersand-shortcuts for every target language be placed in resource files?
 
 ## Minor issues
-1. `SUIT_ShortcutTree` widget does not take the whole available height of preference window, it only takes as mush as its items require.
-2. Selection of `SUIT_ShortcutTree`' item shadows "modified" highlighter. Can be fixed by replacing base `QTreeWidget` of `SUIT_ShortcutTree` with `QTreeView`, or may be by applying some style sheet.
-3. `SUIT_ShortcutMgr` introduces concept of module, but the first module class is `CAM_Module` is introduced along with `CAM_Application`, which is descendant of `SUIT_Application`.
+1. Selection of `SUIT_ShortcutTree`' item shadows "modified" highlighter. Selection of module tab in `SUIT_ShortcutTabWidget` shadows "modified" highlighter.
+2. `SUIT_ShortcutMgr` introduces concept of module, but the first module class is `CAM_Module` is introduced along with `CAM_Application`, which is descendant of `SUIT_Application`.

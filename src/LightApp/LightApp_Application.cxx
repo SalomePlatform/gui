@@ -646,7 +646,7 @@ void LightApp_Application::createActionForViewer( const int id,
 {
   QString vtlt = tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() );
   QString tip = tr( "CREATING_NEW_WINDOW" ).arg( vtlt.remove( "&" ) );
-  QAction* a = createAction(id, desktop(), false /*toggle*/, "/PRP_CREATE_NEW_WINDOW_FOR_VIEWER_" + suffix,
+  QAction* a = createAction(id, desktop(), false /*toggle*/, "/Window/New/ForViewer" + suffix,
                             tip, vtlt, tip, QIcon(),
                             this, SLOT(onNewWindow()));
 
@@ -665,7 +665,7 @@ void LightApp_Application::createActions()
   // Preferences
   createAction( PreferencesId, tr( "TOT_DESK_PREFERENCES" ), QIcon(),
                 tr( "MEN_DESK_PREFERENCES" ), tr( "PRP_DESK_PREFERENCES" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onPreferences() ), "/PRP_DESK_PREFERENCES" );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onPreferences() ), "/File/Preferences" );
 
   // Help menu
 
@@ -791,10 +791,7 @@ void LightApp_Application::createActions()
   int windowMenu = createMenu( tr( "MEN_DESK_WINDOW" ), -1, MenuWindowId, 100 );
   int newWinMenu = createMenu( tr( "MEN_DESK_NEWWINDOW" ), windowMenu, -1, 0 );
 
-  createAction( CloseId, tr( "TOT_CLOSE" ), QIcon(), tr( "MEN_DESK_CLOSE" ), tr( "PRP_CLOSE" ),
-                Qt::CTRL+Qt::Key_F4, desk, false, this, SLOT( onCloseWindow() ) );
-
-  createAction( CloseId, desk, false /*toggle*/, "/PRP_CLOSE",
+  createAction( CloseId, desk, false /*toggle*/, "/Window/Close",
                 tr( "TOT_CLOSE" ), tr( "MEN_DESK_CLOSE" ), tr( "PRP_CLOSE" ), QIcon(),
                 this, SLOT( onCloseWindow() ) );
 
@@ -839,7 +836,7 @@ void LightApp_Application::createActions()
   createActionForViewer( NewQtViewId, newWinMenu, QString::number( 9 ) );
 #endif
 
-  createAction( RenameId, desk, false /*toggle*/, "/PRP_RENAME",
+  createAction( RenameId, desk, false /*toggle*/, "/Window/Rename",
                 tr( "TOT_RENAME" ), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ), QIcon(),
                 this, SLOT( onRenameWindow() ) );
 
@@ -859,7 +856,7 @@ void LightApp_Application::createActions()
 #endif // USE_SALOME_STYLE
 
   createAction( FullScreenId, tr( "TOT_FULLSCREEN" ), QIcon(), tr( "MEN_DESK_FULLSCREEN" ), tr( "PRP_FULLSCREEN" ),
-                QKeySequence::UnknownKey, desk, false, this, SLOT( onFullScreen() ), "/PRP_FULLSCREEN" );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onFullScreen() ), "/View/FullScreen" );
 
 
   int viewMenu = createMenu( tr( "MEN_DESK_VIEW" ), -1 );

@@ -45,19 +45,17 @@ public:
   virtual void     store();
 
 private:
-  SUIT_ShortcutTree* myShortcutTree;
-
-  // { root item (preference window), shortcut container of synchronized trees (widgets within the same window) }
+  // { root item (preference window), shortcut container of synchronized SUIT_ShortcutTabWidgets (widgets within the same window) }
   static std::map<QtxPreferenceItem*, std::weak_ptr<SUIT_ShortcutContainer>> shortcutContainers;
   /** Why is this?
    * Every QtxPagePrefMgr is eventually a preference window. Each preference window has button "Apply".
    * When the button is pressed, all descendants of the QtxPagePrefMgr store changes they carry into preferences.
-   * The pitfall with shortcut trees is as follows: made in independent shortcut trees, changes may conflict,
-   * and merge of such changes is ambiguous. And the solution is to keep shortcut trees within the same window
-   * synchronized - all changes being made in a tree of a synchronized bundle are projected to other trees from the bundle
+   * The pitfall with SUIT_ShortcutTabWidgets is as follows: made in independent instance of SUIT_ShortcutTabWidget, changes may conflict,
+   * and merge of such changes is ambiguous. And the solution is to keep SUIT_ShortcutTabWidgets within the same window
+   * synchronized - all changes being made in a SUIT_ShortcutTabWidget of a synchronized bundle are projected to other SUIT_ShortcutTabWidgets from the bundle
    * without interacting with SUIT_ShortcutMgr.
    *
-   * Every time shortcut preferences stored to the ShortcutMgr, all instances of SUIT_ShortcutTree are updated.
+   * Every time shortcut preferences stored to the ShortcutMgr, all instances of SUIT_ShortcutTabWidget are updated.
   */
 };
 

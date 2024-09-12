@@ -121,7 +121,7 @@ QtxAction::QtxAction( QObject* parent, bool toggle, const QString& ID,
   \param text tooltip text
   \param icon iconset
   \param menuText menu text
-  \param accel will be disabled by SUIT_ShortcutMgr!
+  \param accel May be disabled by SUIT_ShortcutMgr!
   \param parent parent object
   \param toggle if \c true the action will be a toggle action
   \param ID shortcut action identifier
@@ -151,7 +151,7 @@ QtxAction::QtxAction( const QString& text, const QIcon& icon, const QString& men
   \param text tooltip text
   \param icon iconset
   \param menuText menu text
-  \param accel will be disabled by SUIT_ShortcutMgr!
+  \param accel May be disabled by SUIT_ShortcutMgr!
   \param parent parent object
   \param toggle if \c true the action will be a toggle action
   \param ID shortcut action identifier
@@ -180,7 +180,7 @@ QtxAction::QtxAction( const QString& text, const QIcon& icon, const QString& men
 
   \param text tooltip text
   \param menuText menu text
-  \param accel will be disabled by SUIT_ShortcutMgr!
+  \param accel May be disabled by SUIT_ShortcutMgr!
   \param parent parent object
   \param toggle if \c true the action is a toggle action
   \param ID shortcut action identifier
@@ -208,7 +208,7 @@ QtxAction::QtxAction( const QString& text, const QString& menuText,
 
   \param text tooltip text
   \param menuText menu text
-  \param accel will be disabled by SUIT_ShortcutMgr!
+  \param accel May be disabled by SUIT_ShortcutMgr!
   \param parent parent object
   \param toggle if \c true the action is a toggle action
   \param ID shortcut action identifier

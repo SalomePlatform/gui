@@ -1728,8 +1728,8 @@ QtxWorkstack::QtxWorkstack( QWidget* parent )
   myWorkWin( 0 ),
   myWorkArea( 0 )
 {
-  myActionsMap.insert( SplitVertical,   new QtxAction( this, false /*toggle*/, "/PRP_DESK_WINDOW_VSPLIT", tr( "Split vertically" ) ) );
-  myActionsMap.insert( SplitHorizontal, new QtxAction( this, false /*toggle*/, "/PRP_DESK_WINDOW_HSPLIT", tr( "Split horizontally" ) ) );
+  myActionsMap.insert( SplitVertical,   new QtxAction( this, false /*toggle*/, "/Window/SplitV", tr( "Split vertically" ) ) );
+  myActionsMap.insert( SplitHorizontal, new QtxAction( this, false /*toggle*/, "/Window/SplitH", tr( "Split horizontally" ) ) );
   myActionsMap.insert( Close,           new QtxAction( this, false /*toggle*/, tr( "Close" ) ) );
   myActionsMap.insert( Rename,          new QtxAction( this, false /*toggle*/, tr( "Rename" ) ) );
 

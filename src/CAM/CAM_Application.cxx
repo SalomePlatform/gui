@@ -30,8 +30,9 @@
 #include <SUIT_Session.h>
 #include <SUIT_MessageBox.h>
 #include <SUIT_ResourceMgr.h>
-
+#ifndef SUIT_ONLY
 #include <KERNEL_version.h>
+#endif
 #include <GUI_version.h>
 
 #include <QAction>
@@ -964,10 +965,12 @@ CAM_Application::ModuleShortInfoList CAM_Application::getVersionInfo()
 {
   ModuleShortInfoList info;
 
+#ifndef SUIT_ONLY
   ModuleShortInfo kernel;
   kernel.name = "KERNEL";
   kernel.version = KERNEL_VERSION_STR;
   info.append(kernel);
+#endif
 
   ModuleShortInfo gui;
   gui.name = "GUI";

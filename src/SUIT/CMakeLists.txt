@@ -106,6 +106,7 @@ SET(_other_RESOURCES
   resources/icon_visibility_off.png
   resources/view_sync.png
   resources/action_assets.json
+  resources/action_id_mutations.json
 )
 
 # --- sources ---

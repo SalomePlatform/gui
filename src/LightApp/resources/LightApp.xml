@@ -253,6 +253,9 @@
   <section name="action_assets">
     <parameter name="${GUI_ROOT_DIR}/share/salome/resources/gui/action_assets.json" value=""/>
   </section>
+  <section name="actionID_mutations">
+    <parameter name="${GUI_ROOT_DIR}/share/salome/resources/gui/action_id_mutations.json" value=""/>
+  </section>
   <!--Salome shortcut settings
        See SUIT_ShortcutMgr for details.
   -->

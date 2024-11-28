@@ -37,6 +37,7 @@
 #include <QDebug>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QJsonArray>
 #include <QJsonParseError>
 #include <QFile>
 
@@ -566,6 +567,16 @@ std::set<QString> SUIT_ShortcutContainer::getIDsOfAllModules() const
     res.emplace(moduleIDAndShortcuts.first);
   }
   return res;
+}
+
+bool SUIT_ShortcutContainer::isEmpty() const
+{
+  for (const auto& moduleIDAndShortcuts : myShortcutsInversed) {
+    const auto& moduleShortcutsInversed = moduleIDAndShortcuts.second;
+    if (!moduleShortcutsInversed.empty())
+      return false;
+  }
+  return true;
 }
 
 std::set<std::pair<QString, QString>> SUIT_ShortcutContainer::setShortcut(QString theModuleID, const QString& theInModuleActionID, const QKeySequence& theKeySequence, bool theOverride)
@@ -1525,6 +1536,19 @@ SUIT_ShortcutMgr::~SUIT_ShortcutMgr()
     myShortcutMgr = new SUIT_ShortcutMgr();
     myShortcutMgr->setAssetsFromResources();
     myShortcutMgr->setShortcutsFromPreferences();
+
+    { // Migrate old shortcut preferences.
+      SUIT_ShortcutHistorian historian;
+      myShortcutMgr->mergeShortcutContainer(
+        historian.getContainerWithOldShortcuts(),
+        true /*theOverride*/,
+        false /*theTreatAbsentIncomingAsDisabled*/,
+        true /*theSaveToPreferences*/
+      );
+
+      historian.removeOldShortcutPreferences();
+    }
+
     ShCutDbg("SUIT_ShortcutMgr initialization has finished.");
   }
 }
@@ -1665,7 +1689,12 @@ SUIT_ShortcutMgr::~SUIT_ShortcutMgr()
 
 /*static*/ void SUIT_ShortcutMgr::fillContainerFromPreferences(SUIT_ShortcutContainer& theContainer, bool theDefaultOnly)
 {
-  ShCutDbg() && ShCutDbg(QString("SUIT_ShortcutMgr::fillContainerFromPreferences(theContainer, theDefaultOnly = ") + (theDefaultOnly ? "true" : "false") + ") started.");
+  return SUIT_ShortcutMgr::fillContainerFromPreferences(theContainer, theDefaultOnly, SECTION_NAME_PREFIX);
+}
+
+/*static*/ void SUIT_ShortcutMgr::fillContainerFromPreferences(SUIT_ShortcutContainer& theContainer, bool theDefaultOnly, const QString& theSectionNamePrefix)
+{
+  ShCutDbg() && ShCutDbg(QString("SUIT_ShortcutMgr::fillContainerFromPreferences(theContainer, theDefaultOnly = ") + (theDefaultOnly ? "true" : "false") + ", theSectionPrefix = \"" + theSectionNamePrefix + "\") started.");
 
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
   if (!resMgr) {
@@ -1692,7 +1721,7 @@ SUIT_ShortcutMgr::~SUIT_ShortcutMgr()
   // And then it is not able to retrieve parametes from that subsections,
   // because parsed subsection names differ from the ones in resource file.
   // Anyway, it does not affect operability of ShortcutMgr.
-  QStringList moduleIDs = resMgr->subSections(SECTION_NAME_PREFIX, true);
+  QStringList moduleIDs = resMgr->subSections(theSectionNamePrefix, true);
   if (ShCutDbg()) {
     if (moduleIDs.isEmpty())
       ShCutDbg("No discovered shortcut modules.");
@@ -1709,7 +1738,7 @@ SUIT_ShortcutMgr::~SUIT_ShortcutMgr()
       continue;
     }
 
-    const QString sectionName = SECTION_NAME_PREFIX + resMgr->sectionsToken() + moduleID;
+    const QString sectionName = theSectionNamePrefix + resMgr->sectionsToken() + moduleID;
     QStringList moduleActionIDs = resMgr->parameters(sectionName);
 
     for(const QString& inModuleActionID : moduleActionIDs) {
@@ -1806,7 +1835,7 @@ SUIT_ShortcutMgr::~SUIT_ShortcutMgr()
     resMgr->setWorkingMode(resMgrWorkingModeBefore);
 
   ShCutDbg() && ShCutDbg("theContainer holds following shortcuts:\n" + theContainer.toString());
-  ShCutDbg() && ShCutDbg(QString("SUIT_ShortcutMgr::fillContainerFromPreferences(theContainer, theDefaultOnly = ") + (theDefaultOnly ? "true" : "false") + ") finished.");
+  ShCutDbg() && ShCutDbg(QString("SUIT_ShortcutMgr::fillContainerFromPreferences(theContainer, theDefaultOnly = ") + (theDefaultOnly ? "true" : "false") + ", theSectionPrefix = \"" + theSectionNamePrefix + "\") finished.");
 }
 
 /*static*/ std::pair<std::shared_ptr<SUIT_ShortcutModuleAssets>, std::shared_ptr<SUIT_ShortcutItemAssets>>
@@ -3374,4 +3403,340 @@ QString SUIT_ActionSearcher::toString() const
   }
 
   return res;
+}
+
+
+
+const QString SECTION_NAME_ACTION_ID_MUTATION_FILE_PATHS = "actionID_mutations";
+
+/*static*/ const std::vector<QString> SUIT_ShortcutHistorian::SECTION_PREFIX_EVOLUTION = {"shortcuts_vA1.0", "shortcuts"};
+
+/*static*/ const QString SUIT_ShortcutHistorian::AIDSMutation::PROP_ID_MUTATIONS = "mutations";
+/*static*/ const QString SUIT_ShortcutHistorian::AIDSMutation::PROP_ID_PREFIX_OLD = "sectionPrefixOld";
+/*static*/ const QString SUIT_ShortcutHistorian::AIDSMutation::PROP_ID_PREFIX_NEW = "sectionPrefixNew";
+/*static*/ const QString SUIT_ShortcutHistorian::AIDSMutation::PROP_ID_OLD_TO_NEW_ACTION_ID_MAP = "oldToNewActionIDMap";
+
+/*static*/ bool SUIT_ShortcutHistorian::AIDSMutation::isPairOfNewAndOldActionIDsValid(const QString& theSectionPrefixNew, const QString& theSectionPrefixOld)
+{
+  if (theSectionPrefixNew == theSectionPrefixOld) {
+    Warning("SUIT_ShortcutHistorian::AIDSMutation: new section prefix is the same as old one - \"" + theSectionPrefixNew + "\".");
+    return false;
+  }
+
+  return true;
+}
+
+SUIT_ShortcutHistorian::AIDSMutation::AIDSMutation(const QString& theSectionPrefixNew, const QString& theSectionPrefixOld)
+{
+  if (!SUIT_ShortcutHistorian::AIDSMutation::isPairOfNewAndOldActionIDsValid(theSectionPrefixNew, theSectionPrefixOld))
+    throw std::invalid_argument("AIDSMutation::AIDSMutation: invalid prefixes.");
+
+  mySectionPrefixOld = theSectionPrefixOld;
+  mySectionPrefixNew = theSectionPrefixNew;
+}
+
+SUIT_ShortcutHistorian::AIDSMutation::AIDSMutation(const QJsonObject& theJsonObject, const bool theParseMap)
+{
+  mySectionPrefixOld = theJsonObject[SUIT_ShortcutHistorian::AIDSMutation::PROP_ID_PREFIX_OLD].toString();
+  mySectionPrefixNew = theJsonObject[SUIT_ShortcutHistorian::AIDSMutation::PROP_ID_PREFIX_NEW].toString();
+  if (!SUIT_ShortcutHistorian::AIDSMutation::isPairOfNewAndOldActionIDsValid(mySectionPrefixNew, mySectionPrefixOld))
+    throw std::invalid_argument("AIDSMutation::AIDSMutation: invalid prefixes.");
+
+  if (!theParseMap)
+    return;
+
+  const auto actionIDMapJSONObject = theJsonObject[SUIT_ShortcutHistorian::AIDSMutation::PROP_ID_OLD_TO_NEW_ACTION_ID_MAP].toObject();
+  for (const QString& oldActionID : actionIDMapJSONObject.keys()) {
+    if (!SUIT_ShortcutMgr::isActionIDValid(oldActionID)) {
+      Warning("SUIT_ShortcutHistorian::AIDSMutation::fromJSON: invalid action ID \"" + oldActionID + "\" has been encountered.");
+      continue;
+    }
+
+    const QString newActionID = actionIDMapJSONObject[oldActionID].toString();
+    if (!newActionID.isEmpty() && !SUIT_ShortcutMgr::isActionIDValid(newActionID)) {
+      // New action ID may be empty. It means the action has been deleted.
+      Warning("SUIT_ShortcutHistorian::AIDSMutation::fromJSON: invalid action ID \"" + newActionID + "\" has been encountered.");
+      continue;
+    }
+
+    if (myOldToNewActionIDMap.find(oldActionID) != myOldToNewActionIDMap.end()) {
+      Warning("SUIT_ShortcutHistorian::AIDSMutation::fromJSON: old action ID \"" + oldActionID + "\" is not unique within mutation. Ignored.");
+      continue;
+    }
+
+    if (!newActionID.isEmpty() && myNewToOldActionIDMap.find(newActionID) != myNewToOldActionIDMap.end()) {
+      Warning("SUIT_ShortcutHistorian::AIDSMutation::fromJSON: new action ID \"" + newActionID + "\" is not unique within mutation. Ignored.");
+      continue;
+    }
+
+    myOldToNewActionIDMap.emplace(oldActionID, newActionID);
+
+    if (!newActionID.isEmpty())
+      myNewToOldActionIDMap.emplace(newActionID, oldActionID);
+  }
+}
+
+bool SUIT_ShortcutHistorian::AIDSMutation::isConcurrent(const AIDSMutation& theOther) const
+{
+  return mySectionPrefixOld == theOther.mySectionPrefixOld && mySectionPrefixNew == theOther.mySectionPrefixNew;
+}
+
+bool SUIT_ShortcutHistorian::AIDSMutation::merge(const AIDSMutation& theOther)
+{
+  if (!isConcurrent(theOther))
+    return false;
+
+  bool areMutationMapsAugmented = false;
+  for (const auto& oldAndNewActionIDOfOther : theOther.myOldToNewActionIDMap) {
+    const QString& newActionIDOfOther = oldAndNewActionIDOfOther.second;
+    const QString& oldActionIDOfOther = oldAndNewActionIDOfOther.first;
+
+    if (myOldToNewActionIDMap.find(oldActionIDOfOther) != myOldToNewActionIDMap.end()) {
+      Warning("SUIT_ShortcutHistorian::AIDSMutation::merge: old action ID \"" + oldActionIDOfOther + "\" is not unique within mutation. Ignored.");
+      continue;
+    }
+
+    if (!newActionIDOfOther.isEmpty() && myNewToOldActionIDMap.find(newActionIDOfOther) != myNewToOldActionIDMap.end()) {
+      Warning("SUIT_ShortcutHistorian::AIDSMutation::merge: new action ID \"" + newActionIDOfOther + "\" is not unique within mutation. Ignored.");
+      continue;
+    }
+
+    myOldToNewActionIDMap.emplace(oldActionIDOfOther, newActionIDOfOther);
+    if (!newActionIDOfOther.isEmpty())
+      myNewToOldActionIDMap.emplace(newActionIDOfOther, oldActionIDOfOther);
+
+    areMutationMapsAugmented = true;
+  }
+
+  return areMutationMapsAugmented;
+}
+
+
+SUIT_ShortcutHistorian::SUIT_ShortcutHistorian() {
+  parseMutations();
+  ShCutDbg("SUIT_ShortcutHistorian: parsing of old shortcut preference sections started.");
+  for (const auto& oldPrefixAndMutation : myOldPrefixToMutationList) {
+    const QString& oldPrefix = oldPrefixAndMutation.first;
+    auto& container = myShortcutContainers.emplace(oldPrefix, SUIT_ShortcutContainer()).first->second;
+    SUIT_ShortcutMgr::fillContainerFromPreferences(container, false, oldPrefix);
+  }
+  ShCutDbg("SUIT_ShortcutHistorian: parsing of old shortcut preference sections finished.");
+
+  for (auto itPrefix = SUIT_ShortcutHistorian::SECTION_PREFIX_EVOLUTION.rbegin(); itPrefix != SUIT_ShortcutHistorian::SECTION_PREFIX_EVOLUTION.rend(); itPrefix++) {
+    const auto itPrefixAndContainer = myShortcutContainers.find(*itPrefix);
+    if (itPrefixAndContainer == myShortcutContainers.end())
+      continue;
+
+    const QString& oldPrefix = itPrefixAndContainer->first;
+    const auto& container = itPrefixAndContainer->second;
+    const auto oldModuleIDs = container.getIDsOfAllModules();
+    for (const QString& moduleID : oldModuleIDs) {
+      const auto& oldShortcutsInversed = container.getModuleShortcutsInversed(moduleID);
+      for (const auto& oldShortcutInversed : oldShortcutsInversed) {
+        const QString& oldInModuleActionID = oldShortcutInversed.first;
+        const QKeySequence& keySequence = oldShortcutInversed.second;
+        const QString oldActionID = SUIT_ShortcutMgr::makeActionID(moduleID, oldInModuleActionID);
+        if (oldActionID.isEmpty())
+          continue; // moduleID or oldInModuleActionID is invalid.
+
+        const QString actionID = getActionID(oldActionID, oldPrefix);
+        const auto moduleIDAndInModuleActionID = SUIT_ShortcutMgr::splitIntoModuleIDAndInModuleID(actionID);
+        if (moduleIDAndInModuleActionID.second.isEmpty())
+          continue; // actionID is invalid.
+
+        myShortcutContainer.setShortcut(
+          moduleIDAndInModuleActionID.first,
+          moduleIDAndInModuleActionID.second,
+          keySequence,
+          true /*theOverride*/
+        );
+      }
+    }
+  }
+}
+
+bool SUIT_ShortcutHistorian::doOldShortcutPreferencesExist() const
+{
+  for (const auto& prefixAndContainer : myShortcutContainers) {
+    const auto& container = prefixAndContainer.second;
+    if (!container.isEmpty())
+      return true;
+  }
+  return false;
+}
+
+QString SUIT_ShortcutHistorian::getActionID(const QString& theOldActionID, const QString& theOldSectionPrefix) const
+{
+  if (theOldSectionPrefix == SECTION_NAME_PREFIX)
+    return theOldActionID;
+
+  const auto predicate = [&theOldSectionPrefix](const std::pair<QString, SUIT_ShortcutHistorian::AIDSMutation>& thePair) { return thePair.first == theOldSectionPrefix; };
+  auto itOldPrefixAndMutation = std::find_if(myOldPrefixToMutationList.crbegin(), myOldPrefixToMutationList.crend(), predicate);
+  if (itOldPrefixAndMutation == myOldPrefixToMutationList.crend())
+    return QString();
+
+  QString actionID = theOldActionID;
+  for (; itOldPrefixAndMutation != myOldPrefixToMutationList.crend(); itOldPrefixAndMutation++) {
+    const auto& mutation = itOldPrefixAndMutation->second;
+    const auto itOldAndNewActionIDs = mutation.getOldToNewActionIDMap().find(actionID);
+    if (itOldAndNewActionIDs != mutation.getOldToNewActionIDMap().end())
+      actionID = itOldAndNewActionIDs->second;
+  }
+  return actionID;
+}
+
+std::pair<bool, QKeySequence> SUIT_ShortcutHistorian::getOldUserDefinedKeySequence(const QString& theActionID) const
+{
+  auto result = std::pair<bool, QKeySequence>(false, QKeySequence());
+
+  /** ID of the same action before a mutation (migration) happened. */
+  QString oldActionID = theActionID;
+  for (const auto& oldPrefixAndMutation : myOldPrefixToMutationList) {
+    const auto& mutation = oldPrefixAndMutation.second;
+    const auto itNewAndOldActionIDs = mutation.getNewToOldActionIDMap().find(oldActionID);
+    if (itNewAndOldActionIDs != mutation.getNewToOldActionIDMap().end())
+      oldActionID = itNewAndOldActionIDs->second;
+
+    std::pair<bool, QKeySequence> oldKeySequence = getKeySequenceFromSection(oldActionID, mutation.getSectionPrefixOld());
+    if (oldKeySequence.first) {
+      // The old shortcut is defined in the old section. No need to dig deeper into action ID evolution.
+      return result;
+    }
+  }
+  return result;
+}
+
+void SUIT_ShortcutHistorian::removeOldShortcutPreferences()
+{
+  ShCutDbg("SUIT_ShortcutHistorian::removeOldShortcutPreferences() started.");
+
+  SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+  if (!resMgr) {
+    Warning("SUIT_ShortcutHistorian: can't retrieve resource manager!");
+    ShCutDbg("SUIT_ShortcutHistorian::removeOldShortcutPreferences() finished.");
+    return;
+  }
+
+  for (const auto& oldPrefixAndContainer : myShortcutContainers) {
+    const auto& oldSectionNamePrefix = oldPrefixAndContainer.first;
+    const auto& container = oldPrefixAndContainer.second;
+
+    const auto& moduleIDs = container.getIDsOfAllModules();
+    for (const QString& moduleID : moduleIDs) {
+      const QString sectionName = oldSectionNamePrefix + resMgr->sectionsToken() + moduleID;
+
+      ShCutDbg("Section name to remove = \"" + sectionName + "\";");
+      resMgr->remove(sectionName);
+    }
+  }
+
+  ShCutDbg("SUIT_ShortcutHistorian::removeOldShortcutPreferences() finished.");
+}
+
+void SUIT_ShortcutHistorian::parseMutations()
+{
+  ShCutDbg() && ShCutDbg("Parsing action ID mutation files.");
+
+  if (SUIT_ShortcutHistorian::SECTION_PREFIX_EVOLUTION.size() < 2) {
+    Warning("SUIT_ShortcutHistorian: shortcut settings' preference section name evolution is too short.");
+    return;
+  }
+
+  if (SUIT_ShortcutHistorian::SECTION_PREFIX_EVOLUTION.front() != SECTION_NAME_PREFIX) {
+    Warning("SUIT_ShortcutHistorian: shortcut settings' preference section name evolution starts with a prefix, which differs from the actual one.");
+    return;
+  }
+
+  for (size_t idx = 0; idx < SUIT_ShortcutHistorian::SECTION_PREFIX_EVOLUTION.size() - 1; idx++) {
+    const QString& newPrefix = SUIT_ShortcutHistorian::SECTION_PREFIX_EVOLUTION[idx];
+    const QString& oldPrefix = SUIT_ShortcutHistorian::SECTION_PREFIX_EVOLUTION[idx + 1];
+    myOldPrefixToMutationList.emplace_back(std::pair<QString, SUIT_ShortcutHistorian::AIDSMutation>(oldPrefix, SUIT_ShortcutHistorian::AIDSMutation(newPrefix, oldPrefix)));
+  }
+
+  SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+  if (!resMgr) {
+    Warning("SUIT_ShortcutHistorian can't retrieve resource manager!");
+    return;
+  }
+
+  QStringList mutationFilePaths = resMgr->parameters(SECTION_NAME_ACTION_ID_MUTATION_FILE_PATHS);
+#ifdef SHORTCUT_MGR_DBG
+  ShCutDbg("Action ID mutation files: " + mutationFilePaths.join(", ") + ".");
+#endif
+  for (const QString& mutationFilePath : mutationFilePaths) {
+    const QString path = ::SUIT_tools::substituteVars(mutationFilePath);
+    ShCutDbg("Parsing action ID mutation file \"" + path + "\".");
+    QFile mutationFile(path);
+    if (!mutationFile.open(QIODevice::ReadOnly)) {
+      Warning("SUIT_ShortcutHistorian can't open action ID mutation file \"" + path + "\"!");
+      continue;
+    }
+
+    QJsonParseError jsonError;
+    QJsonDocument document = QJsonDocument::fromJson(mutationFile.readAll(), &jsonError);
+    mutationFile.close();
+    if (jsonError.error != QJsonParseError::NoError) {
+      Warning("SUIT_ShortcutHistorian: error during parsing of action ID mutation file \"" + path + "\"!");
+      continue;
+    }
+
+    if (document.isObject()) {
+      const QJsonObject documentJSONObject = document.object();
+      const auto itMutationsJSONVal = documentJSONObject.find(SUIT_ShortcutHistorian::AIDSMutation::PROP_ID_MUTATIONS);
+      if (itMutationsJSONVal == documentJSONObject.end()) {
+        Warning("Action ID mutation file \"" + path + "\" does not contain \"" + SUIT_ShortcutHistorian::AIDSMutation::PROP_ID_MUTATIONS + "\" array.");
+        continue;
+      }
+
+      const auto& mutationsJSONVal = itMutationsJSONVal.value();
+      if (!mutationsJSONVal.isArray()) {
+        Warning("Action ID mutation file \"" + path + "\" has a property \"" + SUIT_ShortcutHistorian::AIDSMutation::PROP_ID_MUTATIONS + "\", but it is not array.");
+        continue;
+      }
+
+      const auto& mutationsJSONArray = mutationsJSONVal.toArray();
+      for (const auto& mutationJSONVal : mutationsJSONArray) {
+        auto mutation = std::unique_ptr<SUIT_ShortcutHistorian::AIDSMutation>(nullptr);
+        try {
+          mutation.reset(new SUIT_ShortcutHistorian::AIDSMutation(mutationJSONVal.toObject()));
+        }
+        catch (const std::invalid_argument& e) {
+          Warning(e.what());
+          continue;
+        }
+
+        const auto predicate = [&mutation] (const std::pair<QString, SUIT_ShortcutHistorian::AIDSMutation>& thePair) { return thePair.first == mutation->getSectionPrefixOld(); };
+        const auto itOldPrefixToMutationList = std::find_if(myOldPrefixToMutationList.begin(), myOldPrefixToMutationList.end(), predicate);
+        if (itOldPrefixToMutationList == myOldPrefixToMutationList.end() || !mutation->isConcurrent(itOldPrefixToMutationList->second)) {
+          Warning("Action ID mutation file \"" + path + "\" contains a Mutation, which is not concurrent with mutations from evolution. Old prefix \"" + mutation->getSectionPrefixOld() + "\"; new prefix \"" + mutation->getSectionPrefixNew() + "\".");
+          continue;
+        }
+
+        itOldPrefixToMutationList->second.merge(*mutation);
+      }
+    }
+  }
+}
+
+std::pair<bool, QKeySequence> SUIT_ShortcutHistorian::getKeySequenceFromSection(const QString& theActionID, const QString& theSectionPrefix) const
+{
+  auto result = std::pair<bool, QKeySequence>(false, QKeySequence());
+
+  const auto moduleIDAndInModuleActionID = SUIT_ShortcutMgr::splitIntoModuleIDAndInModuleID(theActionID);
+  const QString& moduleID = moduleIDAndInModuleActionID.first;
+  const QString& inModuleActionID = moduleIDAndInModuleActionID.second;
+  if (inModuleActionID.isEmpty())
+    return result; // Invalid action ID.
+
+  const auto itContainers = myShortcutContainers.find(theSectionPrefix);
+  if (itContainers == myShortcutContainers.end())
+    return result;
+
+  const auto& container = itContainers->second;
+  if (!container.hasShortcut(moduleID, inModuleActionID))
+    return result;
+
+  result.first = true;
+  result.second = container.getKeySequence(moduleID, inModuleActionID);
+  return result;
 }

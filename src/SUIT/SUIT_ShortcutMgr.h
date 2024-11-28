@@ -76,6 +76,9 @@ public:
 
   std::set<QString> getIDsOfAllModules() const;
 
+  /*! \returns True, if no shortcut is added. */
+  bool isEmpty() const;
+
   /*! \brief Checks for conflicts. If theOverride, modifies incoming and disables all conflicting shortcuts.
   Redefining a key sequence for the action, if theKeySequence does not conflict with other shortcuts, is not considered as a conflict.
   \param theModuleID The method has no effect if theModuleID is invalid. \ref See SUIT_ShortcutMgr::isModuleIDValid(const QString&) for details.
@@ -542,6 +545,9 @@ public:
   \param theDefaultOnly If true, user preferences are ignored and only default preferences are used. */
   static void fillContainerFromPreferences(SUIT_ShortcutContainer& theContainer, bool theDefaultOnly);
 
+  /*! \param theSectionNamePrefix Prefix of section name in preference files to look in. */
+  static void fillContainerFromPreferences(SUIT_ShortcutContainer& theContainer, bool theDefaultOnly, const QString& theSectionNamePrefix);
+
   /*! \brief Returns item assets as they are in asset files.
   Returned module assets is necessary to keep memory ownership of theAction ancestors. The module assets contain only ancestors of theActionID.
   \param theLangs If empty, all languages is parsed. */
@@ -790,6 +796,100 @@ private:
   std::map<QAction*, QKeySequence> myAnonymousShortcuts;
 
   std::map<QKeySequence, std::set<QAction*>> myAnonymousShortcutsInverse;
+};
+
+
+/*! \brief Sometimes developers change IDs of actions. And at the moment of release of these changes
+users may already have cutomized shortcuts. This class assits with user defined shorcut settings' migrations.
+It retrieves keysequences, assigned by user using older Salome versions,
+which operated with old action ID sets. "Action ID set" is also referred as AIDS for brevity. */
+class SUIT_EXPORT SUIT_ShortcutHistorian
+{
+public:
+  /** {name prefix of a section in user preference files}[]. Sorted from the newest to the oldest.
+   *  The list is hardcoded. Update it every time, a new AIDS and appropriate AIDSMutation are added. */
+  static const std::vector<QString> SECTION_PREFIX_EVOLUTION;
+
+private:
+  /*! \brief Describes how action IDs evolved between consequtive versions of action ID sets.
+  PS. Once upon a time I also wanted to cure AIDS. But instead I spawned new ones. With mutations. */
+  class SUIT_EXPORT AIDSMutation
+  {
+  public:
+    static const QString PROP_ID_MUTATIONS;
+    static const QString PROP_ID_PREFIX_OLD;
+    static const QString PROP_ID_PREFIX_NEW;
+    static const QString PROP_ID_OLD_TO_NEW_ACTION_ID_MAP;
+
+    static bool isPairOfNewAndOldActionIDsValid(const QString& theSectionPrefixNew, const QString& theSectionPrefixOld);
+
+    AIDSMutation(const QString& theSectionPrefixNew, const QString& theSectionPrefixOld);
+    AIDSMutation(const QJsonObject& theJsonObject, const bool theParseMap = true);
+
+    const QString& getSectionPrefixOld() const { return mySectionPrefixOld; };
+    const QString& getSectionPrefixNew() const { return mySectionPrefixNew; };
+    const std::map<QString, QString>& getNewToOldActionIDMap() const { return myNewToOldActionIDMap; };
+    const std::map<QString, QString>& getOldToNewActionIDMap() const { return myOldToNewActionIDMap; };
+
+    /*! \returns True, if both old and new prefixes are the same as ones of theOther. */
+    bool isConcurrent(const AIDSMutation& theOther) const;
+
+    /*! \returns True, if mutation maps are augmented. */
+    bool merge(const AIDSMutation& theOther);
+
+  private:
+    /** Old name prefix of a section in user preference files. */
+    QString mySectionPrefixOld;
+
+    /** New name prefix of a section in user preference files. */
+    QString mySectionPrefixNew;
+
+    /** The map only keeps changes between AIDS versions. It means, there is no need to add entries like {theSameActionID, theSameActionID}.
+     *  New action ID can't be empty. */
+    std::map<QString, QString> myNewToOldActionIDMap;
+
+    /** The map only keeps changes between AIDS versions. It means, there is no need to add entries like {theSameActionID, theSameActionID}.
+     *  New action ID may be empty. */
+    std::map<QString, QString> myOldToNewActionIDMap;
+  };
+
+public:
+  SUIT_ShortcutHistorian();
+
+  /*! \returns True, if myShortcutContainers has at least one shortcut. */
+  bool doOldShortcutPreferencesExist() const;
+
+  /*! \brief Evolves theOldActionID defined in section theOldSectionPrefix.
+  \returns Empty string, if theOldSectionPrefix is not defined in SUIT_ShortcutHistorian::SECTION_PREFIX_EVOLUTION.*/
+  QString getActionID(const QString& theOldActionID, const QString& theOldSectionPrefix) const;
+
+  /*!
+  \param theActionID Action ID in latest version (as elsewhere in ShortcutMgr code).
+  \returns {false, _ }, if shortcut is not defined in any outdated shortcut section of user preference files. */
+  std::pair<bool, QKeySequence> getOldUserDefinedKeySequence(const QString& theActionID) const;
+
+  const SUIT_ShortcutContainer& getContainerWithOldShortcuts() const { return myShortcutContainer; };
+
+  /*! \brief Removes old shortcut sections from preference files and clears myShortcutContainers. */
+  void removeOldShortcutPreferences();
+
+private:
+  void parseMutations();
+
+  /*!
+  \param theSectionPrefix User preferences' section name with shortcuts.
+  \returns {false, _ }, is the shortcut is not defined in the section. */
+  std::pair<bool, QKeySequence> getKeySequenceFromSection(const QString& theActionID, const QString& theSectionPrefix) const;
+
+private:
+  /** {sectionNamePrefixOld, mutation}[]. Sorted from the newest to the oldest. */
+  std::list<std::pair<QString, SUIT_ShortcutHistorian::AIDSMutation>> myOldPrefixToMutationList;
+
+  /** {sectionNamePrefixOld, shortcutContainer}[]. */
+  std::map<QString, SUIT_ShortcutContainer> myShortcutContainers;
+
+  /** Merged myShortcutContainers. Merge is performed from the oldest to the newest, newer shortcuts override older ones. */
+  SUIT_ShortcutContainer myShortcutContainer;
 };
 
 

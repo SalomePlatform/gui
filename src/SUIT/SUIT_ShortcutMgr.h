@@ -800,9 +800,62 @@ private:
 
 
 /*! \brief Sometimes developers change IDs of actions. And at the moment of release of these changes
-users may already have cutomized shortcuts. This class assits with user defined shorcut settings' migrations.
-It retrieves keysequences, assigned by user using older Salome versions,
-which operated with old action ID sets. "Action ID set" is also referred as AIDS for brevity. */
+users may already have cutomized shortcuts. SUIT_ShortcutHistorian assits with user defined shorcut settings' migrations.
+It retrieves keysequences, assigned to actions by user using older Salome versions,
+which operated with old action ID sets. "Action ID set" is also referred as AIDS for brevity.
+
+HOW TO USE
+Use the guide, if action IDs have been changed or some action have been removed.
+If new actions have been added, no need to make anything related to SUIT_ShortcutHistorian.
+
+1) Go to action_assets.json files and change assets accordingly. Remove assets of removed actions.
+
+2) Come up with a new prefix for shortcut sections' name in preference files. At the moment of writing, the prefix is "shortcuts_vA1.0".
+   The prefix must not contain ":" character - the character delimits prefix from module ID.
+   Append the new prefix to SUIT_ShortcutHistorian::SECTION_PREFIX_EVOLUTION list.
+   All prefixes in the list must be unique.
+
+3) Go to default preference files (.xml, or .xml.in). Change an old prefix to the new one.
+   Change old action IDs to new ones. Remove shorcuts of removed actions.
+
+4) Compose/modify action_id_mutations.json files.
+   Add an entry, structured as shown below, to "mutations" array.
+   A) <OLD_SHORTCUT_PREFIX> and <NEW_SHORTCUT_PREFIX> must be consecutive prefixes from SUIT_ShortcutHistorian::SECTION_PREFIX_EVOLUTION.
+   B) Sorting or mutations array does not matter.
+   C) If no IDs were changed/removed between shortcut versions "L" and "N",
+   there is no need to add mutations "L==>L+1", "L+1==>L+2", ..., "N-1==>N".
+   D) Mutations also handle move of an action to another module: "oldToNewActionIDMap"
+      contains action IDs, which are composed of a moduleID and an inModuleActionID.
+   E) If an action has been removed, put an empty ID after its <moduleID/inModuleActionID>.
+
+    {
+      "sectionPrefixOld": "OLD_SHORTCUT_PREFIX",
+      "sectionPrefixNew": "NEW_SHORTCUT_PREFIX,
+      "oldToNewActionIDMap": {
+        "MODULE_ID_1/OLD_IN_MODULE_ACTION_ID_1" : "MODULE_ID_1/MODIFIED_IN_MODULE_ACTION_ID_1",
+        "MODULE_ID_1/OLD_IN_MODULE_ACTION_ID_2" : "MODULE_ID_2/MODIFIED_IN_MODULE_ACTION_ID_2",
+        "MODULE_ID_1/REMOVED_IN_MODULE_ACTION_ID" : ""
+      }
+    }
+
+  5) If action_id_mutations.json has just been created, put a path to it into
+     a default preference file, section "actionID_mutations", e.g.:
+
+    <section name="actionID_mutations">
+      <parameter name="%GEOM_ROOT_DIR%/share/salome/resources/geom/action_id_mutations.json" value=""/>
+    </section>
+    .
+
+  HOW IT WORKS
+  1) During the SUIT_ShortcutMgr initialization an instance of SUIT_ShortcutHistorian is created.
+  2) The SUIT_ShortcutHistorian instance goes through the SUIT_ShortcutHistorian::SECTION_PREFIX_EVOLUTION and
+  parses old shortcut sections of user preference file (~/.config/salome/SalomeApprc.9.11.0 on Linux).
+  3) Using mutation data, it replaces old action IDs with actual ones, and merges them
+  into single SUIT_ShortcutContainer. Newer shortcuts override older ones.
+  4) Merges migrated shortcut container into an actual one. Migrated shortcuts override actual ones.
+  5) Updates actual shortcut section of user preference file.
+  6) Erases old shortcut sections of user preference file.
+*/
 class SUIT_EXPORT SUIT_ShortcutHistorian
 {
 public:

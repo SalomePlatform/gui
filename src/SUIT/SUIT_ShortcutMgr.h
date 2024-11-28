@@ -35,6 +35,7 @@
 #include <memory>
 #include <utility>
 #include <limits>
+#include <functional>
 
 class QAction;
 class QtxAction;

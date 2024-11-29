@@ -2817,6 +2817,9 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   // ... "Study properties" group <<start>>
   int studyGroup = pref->addPreference( tr( "PREF_GROUP_STUDY" ), genTab );
   pref->setItemProperty( "columns", 2, studyGroup );
+
+  pref->addPreference( "", studyGroup, LightApp_Preferences::Space );
+  pref->addPreference( tr( "PREF_DO_NOT_CONFIRM_ON_EXIT" ),  studyGroup, LightApp_Preferences::Bool, "Study", "do_not_confirm_on_exit" );
   // .... -> multi-file save
   pref->addPreference( tr( "PREF_MULTI_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "multi_file" );
   // .... -> ascii save mode

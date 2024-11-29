@@ -433,17 +433,24 @@ void SalomeApp_Application::onExit()
 
   bool killServers = false;
   bool result = true;
-
-  if ( exitConfirmation() ) {
-    SalomeApp_ExitDlg dlg( desktop() );
-    result = dlg.exec() == QDialog::Accepted;
-    killServers = dlg.isServersShutdown();
-  }
-
-  if ( result ) {
-    if ( !killServers ) myIsCloseFromExit = true;
+  SUIT_ResourceMgr* resMgr = resourceMgr();
+  bool quietExit = resMgr->booleanValue( "Study", "do_not_confirm_on_exit", false );
+  if ( quietExit ){
     SUIT_Session::session()->closeSession( SUIT_Session::ASK, killServers );
     if ( SUIT_Session::session()->applications().count() > 0 ) myIsCloseFromExit = false;
+  }
+  else{
+    if ( exitConfirmation() ) {
+      SalomeApp_ExitDlg dlg( desktop() );
+      result = dlg.exec() == QDialog::Accepted;
+      killServers = dlg.isServersShutdown();
+    }
+
+    if ( result ) {
+      if ( !killServers ) myIsCloseFromExit = true;
+      SUIT_Session::session()->closeSession( SUIT_Session::ASK, killServers );
+      if ( SUIT_Session::session()->applications().count() > 0 ) myIsCloseFromExit = false;
+    }
   }
 }
 

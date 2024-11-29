@@ -705,6 +705,10 @@ The changes will be applied on the next application session.</translation>
         <translation>Show splash screen at start-up</translation>
     </message>
     <message>
+        <source>PREF_DO_NOT_CONFIRM_ON_EXIT</source>
+        <translation>Do not confirm on exit</translation>
+    </message>
+    <message>
         <source>PREF_OPAQUE_RESIZE</source>
         <translation>Opaque resize</translation>
     </message>

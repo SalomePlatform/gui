@@ -696,6 +696,10 @@ Pythonファイルは、文字、数字、アンダースコアが含まれて�
       <translation>スプラッシュ スクリーンを表示します。</translation>
     </message>
     <message>
+        <source>PREF_DO_NOT_CONFIRM_ON_EXIT</source>
+        <translation>終了時に確認しない</translation>
+    </message>
+    <message>
       <source>PREF_OPAQUE_RESIZE</source>
       <translation>不透明のサイズ変更</translation>
     </message>

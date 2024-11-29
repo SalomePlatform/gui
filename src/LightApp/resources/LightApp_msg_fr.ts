@@ -705,6 +705,10 @@ Les modifications seront appliquées à la prochaine session.</translation>
         <translation>Afficher l&apos;écran de démarrage</translation>
     </message>
     <message>
+        <source>PREF_DO_NOT_CONFIRM_ON_EXIT</source>
+        <translation>Quitter sans confirmer</translation>
+    </message>
+    <message>
         <source>PREF_OPAQUE_RESIZE</source>
         <translation>Redimensionnement opaque</translation>
     </message>

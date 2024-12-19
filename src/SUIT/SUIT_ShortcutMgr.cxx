@@ -68,11 +68,11 @@ bool ShCutDbg(const char* src)
 
 void Warning(const QString& theString)
 {
-  std::wcout << theString.toStdWString() << std::endl;
+  //std::wcout << theString.toStdWString() << std::endl;
 }
 void Warning(const char* src)
 {
-  std::wcout << std::wstring(src, src + strlen(src)) << std::endl;
+  //std::wcout << std::wstring(src, src + strlen(src)) << std::endl;
 }
 
 

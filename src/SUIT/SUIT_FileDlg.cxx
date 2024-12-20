@@ -546,13 +546,14 @@ QString SUIT_FileDlg::addExtension( const QString& fileName ) const
     return fileName;
 
   // current file extension
-  QString anExt = "." + SUIT_Tools::extension(fname, true).trimmed();
+  QString aMultiExt = "." + SUIT_Tools::extension(fname, true).trimmed();
+  QString aSingleExt = "." + SUIT_Tools::extension(fname).trimmed();
 
   // If the file already has extension and it does not match the filter there are two choices:
   // - to leave it 'as is'
   // - to ignore it
   // The behavior is defined by IGNORE_NON_MATCHING_EXTENSION constant
-  if ( anExt != "." && !IGNORE_NON_MATCHING_EXTENSION )
+  if ( aMultiExt != "." && aSingleExt != "." && !IGNORE_NON_MATCHING_EXTENSION )
     return fileName;
 
   QRegExp r( QString::fromLatin1("\\(?[a-zA-Z0-9.*? +;#|]*\\)?$") );
@@ -587,7 +588,7 @@ QString SUIT_FileDlg::addExtension( const QString& fileName ) const
     QRegExp anExtRExp( "^("+ aPattern + ")$" );
 
     // Check if the current file extension matches the pattern
-    if ( !anExtRExp.exactMatch( anExt ) ) {
+    if ( !anExtRExp.exactMatch( aMultiExt ) && !anExtRExp.exactMatch( aSingleExt ) ) {
       // find first appropriate extension in the selected filter 
       // (it should be without wildcard symbols)
       for ( int i = 0; i < extList.count(); i++ ) {

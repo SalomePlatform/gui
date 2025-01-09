@@ -34,7 +34,7 @@ ADD_DEFINITIONS(
   )
 
 SET(_link_LIBRARIES 
-  ${KERNEL_OpUtil}        # class SALOME_Exception
+  SALOMEException
   PyInterp                # class PyLockWrapper
   )
 

@@ -26,6 +26,7 @@ INCLUDE_DIRECTORIES(
   ${OpenCASCADE_INCLUDE_DIR}
   ${QT_INCLUDES}
   ${PTHREAD_INCLUDE_DIR}
+  ${SALOMEBOOTSTRAP_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/src/Qtx
   ${PROJECT_SOURCE_DIR}/src/SUIT
 )
@@ -48,7 +49,7 @@ SET(_link_LIBRARIES
   ${OpenCASCADE_FoundationClasses_LIBRARIES}
   qtx
   suit
-  ${KERNEL_SALOMELocalTrace}
+  ${SALOMEBOOTSTRAP_SALOMELocalTrace}
   )
 
 # --- headers ---

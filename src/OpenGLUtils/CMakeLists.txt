@@ -22,10 +22,11 @@
 # additional include directories
 INCLUDE_DIRECTORIES(
   ${PTHREAD_INCLUDE_DIR}
+  ${SALOMEBOOTSTRAP_INCLUDE_DIRS}
 )
 
 # libraries to link to
-SET(_link_LIBRARIES ${OPENGL_LIBRARIES} ${KERNEL_SALOMELocalTrace})
+SET(_link_LIBRARIES ${OPENGL_LIBRARIES} ${SALOMEBOOTSTRAP_SALOMELocalTrace})
 
 # --- headers ---
 

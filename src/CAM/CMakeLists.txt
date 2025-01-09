@@ -24,6 +24,7 @@ INCLUDE(UseQtExt)
 # additional include directories
 INCLUDE_DIRECTORIES(
   ${QT_INCLUDES}
+  ${SALOMEBOOTSTRAP_INCLUDE_DIRS}
   ${PROJECT_BINARY_DIR}
   ${PROJECT_SOURCE_DIR}/src/Qtx
   ${PROJECT_SOURCE_DIR}/src/SUIT
@@ -36,7 +37,7 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 # libraries to link to
 SET(_link_LIBRARIES
   ${QT_LIBRARIES}
-  ${KERNEL_SALOMELocalTrace}
+  ${SALOMEBOOTSTRAP_SALOMELocalTrace}
   qtx suit std
   )
 

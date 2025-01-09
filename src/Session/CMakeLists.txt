@@ -29,6 +29,8 @@ INCLUDE_DIRECTORIES(
   ${OpenCASCADE_INCLUDE_DIR}
   ${OMNIORB_INCLUDE_DIR}
   ${PTHREAD_INCLUDE_DIR}
+  ${SALOMEBOOTSTRAP_INCLUDE_DIRS}
+  ${KERNEL_INCLUDE_DIRS}
   ${PROJECT_BINARY_DIR}
   ${PROJECT_BINARY_DIR}/idl
   ${PROJECT_SOURCE_DIR}/src/Qtx
@@ -61,7 +63,7 @@ SET(_link_LIBRARIES
   ${KERNEL_SalomeNS}
   ${KERNEL_SalomeLifeCycleCORBA}
   ${KERNEL_OpUtil}
-  ${KERNEL_SALOMELocalTrace}
+  ${SALOMEBOOTSTRAP_SALOMELocalTrace}
   ${KERNEL_SalomeCatalog}
   ${KERNEL_SalomeDSClient}
   ${KERNEL_with_loggerTraceCollector}
@@ -69,7 +71,7 @@ SET(_link_LIBRARIES
   ${KERNEL_SalomeContainer}
   ${KERNEL_SalomeLauncher}
   ${KERNEL_Registry}
-  ${KERNEL_SALOMEBasics}
+  ${SALOMEBOOTSTRAP_SALOMEBasics}
   qtx suit Event SalomeStyle SalomeApp SalomeIDLGUI
 )
 

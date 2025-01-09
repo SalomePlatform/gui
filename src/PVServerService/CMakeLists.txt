@@ -25,6 +25,7 @@ ENDIF()
 INCLUDE_DIRECTORIES(
   ${CMAKE_CURRENT_SOURCE_DIR}
   ${KERNEL_INCLUDE_DIRS}
+  ${SALOMEBOOTSTRAP_INCLUDE_DIRS}
   ${PROJECT_SOURCE_DIR}/tools/PyInterp/src
   )
 
@@ -34,7 +35,7 @@ ADD_DEFINITIONS(
   )
 
 SET(_link_LIBRARIES 
-  SALOMEException
+  ${SALOMEBOOTSTRAP_SALOMEException}
   PyInterp                # class PyLockWrapper
   )
 

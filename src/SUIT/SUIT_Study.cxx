@@ -142,11 +142,13 @@ bool SUIT_Study::openDocument( const QString& fileName )
 /*!
  * Save document as \a fileName. Set file name.
  */
-bool SUIT_Study::saveDocumentAs( const QString& fileName )
+bool SUIT_Study::saveDocumentAs( const QString& fileName, bool isBackup/*=false*/ )
 {
-  myName = fileName;
-  myIsSaved = true;
-  myIsModified = false;
+  if (!isBackup) {
+    myName = fileName;
+    myIsSaved = true;
+    myIsModified = false;
+  }
 
   return true;
 }

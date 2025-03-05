@@ -36,6 +36,7 @@
 
 #include <set>
 
+
 /*!
   Constructor.
 */
@@ -134,7 +135,7 @@ bool LightApp_Study::loadDocument( const QString& theStudyName )
 /*!
   Saves document
 */
-bool LightApp_Study::saveDocumentAs( const QString& theFileName )
+bool LightApp_Study::saveDocumentAs( const QString& theFileName, bool isBackup/*=false*/ )
 {
   SUIT_ResourceMgr* resMgr = application()->resourceMgr();
   if( !resMgr )
@@ -190,7 +191,7 @@ bool LightApp_Study::saveDocumentAs( const QString& theFileName )
   bool res = saveStudyData(theFileName, 0); // 0 means persistence file
   res = res && CAM_Study::saveDocumentAs( theFileName );
   //SRN: BugID IPAL9377, removed usage of uninitialized variable <res>
-  if ( res )
+  if ( res && !isBackup)
     emit saved( this );
 
   return res;

@@ -60,6 +60,7 @@
 #include <SALOMEconfig.h>
 #include CORBA_SERVER_HEADER(SALOME_Exception)
 
+
 //#define NOTIFY_BY_EVENT
 
 class ObserverEvent : public QEvent
@@ -595,10 +596,14 @@ bool SalomeApp_Study::loadDocument( const QString& theStudyName )
   Saves document
   \param theFileName - name of file
 */
-bool SalomeApp_Study::saveDocumentAs( const QString& theFileName )
+bool SalomeApp_Study::saveDocumentAs( const QString& theFileName, bool isBackup/*=false*/ )
 {
+  bool wasSaved = isSaved();
+  bool wasModified = isModified();
+  std::string oldName = (studyDS() ? studyDS()->Name() : "");
+  std::string oldURL = (studyDS() ? studyDS()->URL() : "");
   bool store = application()->resourceMgr()->booleanValue( "Study", "store_visual_state", false );
-  if ( store )
+  if ( store && !isBackup )
     SalomeApp_VisualState( (SalomeApp_Application*)application() ).storeState();
 
   ModelList list; dataModels( list );
@@ -611,7 +616,7 @@ bool SalomeApp_Study::saveDocumentAs( const QString& theFileName )
     if ( LightApp_DataModel* aModel = 
          dynamic_cast<LightApp_DataModel*>( it.next() ) ) {
       listOfFiles.clear();
-      aModel->saveAs( theFileName, this, listOfFiles );
+      aModel->saveAs( theFileName, this, listOfFiles, isBackup );
       if ( !listOfFiles.isEmpty() )
         saveModuleData(aModel->module()->name(), 0, // 0 means persistence file
                        listOfFiles);
@@ -626,12 +631,25 @@ bool SalomeApp_Study::saveDocumentAs( const QString& theFileName )
   bool isMultiFile = resMgr->booleanValue( "Study", "multi_file", false );
   bool isAscii = resMgr->booleanValue( "Study", "ascii_file", false );
   bool res = studyDS()->SaveAs( theFileName.toUtf8().data(), isMultiFile, isAscii )
-    && CAM_Study::saveDocumentAs( theFileName );
+    && CAM_Study::saveDocumentAs( theFileName, isBackup );
 
   res = res && saveStudyData(theFileName, 0); // 0 means persistence file
 
-  if ( res )
+  if ( res && !isBackup )
     emit saved( this );
+
+  if (isBackup)
+  {
+    // Restore the isSaved and isModified flag after having done backup
+    setIsSaved(wasSaved);
+    setIsModified(wasModified);
+    // If the document hasn't been saved before, reset here its name and URL
+    if (studyDS())
+    {
+      studyDS()->URL(oldURL);
+      studyDS()->Name(oldName);
+    }
+  }
 
   return res;
 }

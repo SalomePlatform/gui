@@ -76,9 +76,11 @@ public:
   virtual bool        loadDocument( const QString& ); 
 
   virtual bool        saveDocument();
-  virtual bool        saveDocumentAs( const QString& );
+  virtual bool        saveDocumentAs( const QString&, bool isBackup=false );
 
   virtual void        closeDocument(bool permanently = true);
+
+  virtual bool        dump( const QString&, bool, bool, bool ) { return false; }
 
   virtual bool        isSaved()  const;
   virtual bool        isModified() const;

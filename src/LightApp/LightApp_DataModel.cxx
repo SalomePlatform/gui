@@ -34,6 +34,7 @@
 #include <SUIT_DataBrowser.h>
 #include <SUIT_DataObject.h>
 
+
 /*!
   Constructor
 */
@@ -73,9 +74,10 @@ bool LightApp_DataModel::save( QStringList& )
 /*!
   Emit saved()
 */
-bool LightApp_DataModel::saveAs( const QString&, CAM_Study*, QStringList& )
+bool LightApp_DataModel::saveAs( const QString&, CAM_Study*, QStringList&, bool isBackup/*=false*/ )
 {
-  emit saved();
+  if (!isBackup)
+    emit saved();
   return true;
 }
 

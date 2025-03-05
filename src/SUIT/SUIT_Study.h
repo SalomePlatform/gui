@@ -60,7 +60,7 @@ public:
   virtual bool      createDocument( const QString& );
 
   bool              saveDocument();
-  virtual bool      saveDocumentAs( const QString& );
+  virtual bool      saveDocumentAs( const QString&, bool isBackup=false );
 
   virtual void      update();
 

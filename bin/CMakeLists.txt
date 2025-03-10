@@ -24,6 +24,6 @@ SALOME_CONFIGURE_FILE(VERSION.in VERSION INSTALL ${SALOME_INSTALL_BINS})
 # ===============================================================
 
 SET(_bin_scripts
-    runLightSalome.csh runLightSalome.sh gui_setenv.py
+    runLightSalome.csh runLightSalome.sh gui_setenv.py runSalome.py
 )
 SALOME_INSTALL_SCRIPTS("${_bin_scripts}" ${SALOME_INSTALL_SCRIPT_SCRIPTS})

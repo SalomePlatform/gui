@@ -9,7 +9,10 @@
 #include <Qtx.h>
 #include <SUIT_ResourceMgr.h>
 
-const QString ITERACTIVE_EXTCOMPONENT_KEY("salome_interactive");
+const QString EXTNAME_KEY("name");
+const QString SALOMEMODULENAME_KEY("salomemodule_name");
+const QString SALOMEGUI_KEY("salomegui");
+
 
 void UpdateCompInfo_with_salomeappdir(const QDir& salomeappdir, SUIT_ResourceMgr* ResMgr);
 void UpdateCompInfo_with_salomemodules(const QString& salomemodules, const QDir& salomeappdir, SUIT_ResourceMgr* ResMgr);

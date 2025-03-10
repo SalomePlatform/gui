@@ -931,13 +931,16 @@ void LightApp_Application::customize()
     updateSalomeApprc();
 
     QStringList modList = resourceMgr()->stringValue( "launch", "user_modules" ).split( ";", QString::SkipEmptyParts );
-    foreach ( QString aModule, modList )
+    foreach ( QString aModule, modList ){
       addUserModule(  aModule, resourceMgr()->stringValue( "user_modules", aModule ), true );
+      MESSAGE("AModule = " + aModule.toStdString());
+    }
   }
   else
   {
     moduleAction->setModeEnabled( LightApp_ModuleAction::AddRemove, false );
   }
+  showAllModuleInfo();
 }
 
 /*!
@@ -1038,17 +1041,21 @@ void LightApp_Application::onExtAdding()
       continue;
     }
 
-    PyObjWrapper pKeys = PyDict_Keys(unpackedModules);
     // Iterate all the components (modules) for this extension
-    for (Py_ssize_t pos = 0; pos < PyDict_Size(unpackedModules); ++pos)
-    {
-      auto moduleNameItem = PyList_GetItem(pKeys, pos);
-      auto interactiveItem = PyDict_GetItem(unpackedModules, moduleNameItem);
-
-      QString moduleName(PyUnicode_AsUTF8(moduleNameItem));
-      SCRUTE(moduleName.toStdString());
-      addUserModule(moduleName, SalomeExtDir, PyObject_IsTrue(interactiveItem));
-    }
+    auto extnameitem = PyTuple_GetItem(unpackedModules, 0);
+    auto salomeguiitem = PyTuple_GetItem(unpackedModules, 1);
+    QString extname(PyUnicode_AsUTF8(extnameitem));
+    bool salomegui = (salomeguiitem == Py_True);
+    addUserModule(extname, SalomeExtDir, salomegui);
+    //for (Py_ssize_t pos = 0; pos < PyList_Size(unpackedModules); ++pos)
+    //{
+    //  auto moduleNameItem = PyList_GetItem(unpackedModules, pos);
+    //  auto interactiveItem = PyDict_GetItem(unpackedModules, moduleNameItem);
+//
+    //  QString moduleName(PyUnicode_AsUTF8(moduleNameItem));
+    //  SCRUTE(moduleName.toStdString());
+    //  addUserModule(moduleName, SalomeExtDir, PyObject_IsTrue(interactiveItem));
+    //}
 
     // Add an extension to GUI
     QFileInfo extFileInfo(path);
@@ -1207,9 +1214,12 @@ void LightApp_Application::removeUserModule(const QString& moduleInnerName, Ligh
   // Remove settings
   // Here we use an inner module name!
   QStringList customModules = resourceMgr()->stringValue("launch", "user_modules").split(";", QString::SkipEmptyParts);
+  MESSAGE("module inner name = " + moduleInnerName.toStdString())
   customModules.removeAll(moduleInnerName);
+
   resourceMgr()->setValue("launch", "user_modules", customModules.join(";"));
   removeModuleInfo(moduleInnerName);
+  showAllModuleInfo();
 }
 
 /*!On module removing action.*/
@@ -1274,14 +1284,10 @@ void LightApp_Application::onExtRemoving(const QString& title)
 
   // Module's content was already removed on python remove_salomex call,
   // then all we do next - just remove UI items.
-  for (Py_ssize_t pos = 0; pos < PyList_Size(removedModules); ++pos)
-  {
-    // Get the current module's name
-    auto moduleNameItem = PyList_GetItem(removedModules, pos);
-    const QString moduleInnerName(PyUnicode_AsUTF8(moduleNameItem));
+  // Get the current module's name
+  const QString moduleInnerName(PyUnicode_AsUTF8(removedModules));
 
-    removeUserModule(moduleInnerName, moduleAction);
-  }
+  removeUserModule(moduleInnerName, moduleAction);
 
   // Remove an ext from UI
   if (moduleAction)

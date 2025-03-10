@@ -113,6 +113,7 @@ protected:
 protected:
   bool                appendModuleInfo( const QString& );
   void                removeModuleInfo( const QString& );
+  void                showAllModuleInfo();
 
 private:
   enum { stInvalid = -1, stUnknown = 0, stNoGui, stInaccessible, stReady };

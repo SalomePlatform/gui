@@ -933,6 +933,18 @@ void CAM_Application::removeModuleInfo( const QString& modName )
   }
 }
 
+void CAM_Application::showAllModuleInfo()
+{
+  MESSAGE("show all module name:\n");
+  for (ModuleInfo mod: myInfoList)
+  {
+    MESSAGE("mod_name = " + mod.name.toStdString());
+    MESSAGE("mod_name = " + mod.title.toStdString());
+    MESSAGE("description = " + mod.description.toStdString());
+    MESSAGE("library = " + mod.library.toStdString());
+  }
+}
+
 /*!
   \brief Add common menu items to the popup menu.
 

@@ -1,5 +1,6 @@
 #include "SalomeApprc_utils.h"
 
+#include <iostream>
 void UpdateCompInfo_with_salomeappdir(const QDir& salomeappdir, SUIT_ResourceMgr* ResMgr)
 {
 	// Remove module list and  module_root_dirs list
@@ -23,30 +24,28 @@ void UpdateCompInfo_with_salomeappdir(const QDir& salomeappdir, SUIT_ResourceMgr
             continue;
         }
         QJsonObject salomexd_dict = document.object();
-        QJsonValue components = salomexd_dict.value( "components");
 
-		QString root(salomeappdir.path() + "/__SALOME_EXT__");
-		if ( components.isArray() )
+		QJsonValue salomegui = salomexd_dict.value(SALOMEGUI_KEY);
+
+		if (salomegui.isBool() && salomegui.toBool())
 		{
-			// In the case that we have a list of components. We consider that all of them are GUI module
-			foreach ( auto comp, components.toArray())
+			QJsonValue salomemodule_name = salomexd_dict.value( SALOMEMODULENAME_KEY );
+
+			QString modname;
+			if (salomemodule_name.isString() && !salomemodule_name.toString().isEmpty())
 			{
-				AddGuiComponent(comp.toString(), root, ResMgr);
+				modname = salomemodule_name.toString();
 			}
-		}
-		else
-		{
-			// In the case that we have a dict of several component group
-			QJsonObject compObj = components.toObject();
-			foreach ( QString key, compObj.keys() )
-		    {
-				if ( QString::compare(key, ITERACTIVE_EXTCOMPONENT_KEY) == 0 )
-				{
-					foreach (auto comp, compObj.value(key).toArray() )
-						AddGuiComponent(comp.toString(), root, ResMgr);
-				}
+			else
+			{
+				modname = salomexd_dict.value(EXTNAME_KEY).toString();
+				qDebug() << "extension name is used as salome module name";
 			}
+			qInfo() << "add module ======================" << modname;
+			QString root(salomeappdir.path() + "/__SALOME_EXT__");
+			AddGuiComponent(modname, root, ResMgr);
 		}
+
     }
 }
 

@@ -7,7 +7,7 @@ void UpdateCompInfo_with_salomeappdir(const QDir& salomeappdir, SUIT_ResourceMgr
 	ResMgr->remove("launch", "user_modules");
 	ResMgr->remove("user_modules");
 
-	QFileInfoList salomexd_list = salomeappdir.entryInfoList(QStringList() << "*.salomexd",QDir::Files);
+	QFileInfoList salomexd_list = QDir(salomeappdir.path() + DFILES_DIR).entryInfoList(QStringList() << "*.salomexd",QDir::Files);
 	foreach(QFileInfo filename, salomexd_list)
     {
 		QFile file( filename.filePath() );

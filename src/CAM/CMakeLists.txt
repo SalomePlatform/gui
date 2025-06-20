@@ -29,7 +29,6 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}/src/Qtx
   ${PROJECT_SOURCE_DIR}/src/SUIT
   ${PROJECT_SOURCE_DIR}/src/STD
-  ${PROJECT_SOURCE_DIR}/tools/PyInterp/src
 )
 
 # additional preprocessor / compiler flags

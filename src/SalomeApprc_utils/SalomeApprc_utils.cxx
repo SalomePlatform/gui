@@ -7,6 +7,13 @@ void UpdateCompInfo_with_salomeappdir(const QDir& salomeappdir, SUIT_ResourceMgr
 	ResMgr->remove("launch", "user_modules");
 	ResMgr->remove("user_modules");
 
+    QString mod_order = getenv("SOD_MODULE_ORDER");
+    QStringList ordered_guimod_list ;
+    QStringList guimod_list ;
+    if ( !mod_order.isEmpty() ){
+      ordered_guimod_list = mod_order.split(",", QString::SkipEmptyParts);
+    }
+
 	QFileInfoList salomexd_list = QDir(salomeappdir.path() + DFILES_DIR).entryInfoList(QStringList() << "*.salomexd",QDir::Files);
 	foreach(QFileInfo filename, salomexd_list)
     {
@@ -42,11 +49,21 @@ void UpdateCompInfo_with_salomeappdir(const QDir& salomeappdir, SUIT_ResourceMgr
 				qDebug() << "extension name is used as salome module name";
 			}
 			qInfo() << "add module ======================" << modname;
-			QString root(salomeappdir.path() + "/__SALOME_EXT__");
+			guimod_list.append(modname);
+		}
+    }
+	if (!guimod_list.isEmpty()){
+		QString root(salomeappdir.path() + "/__SALOME_EXT__");
+		foreach(QString modname, ordered_guimod_list){
+			if (guimod_list.contains(modname)){
+				AddGuiComponent(modname, root, ResMgr);
+				guimod_list.removeAll(modname);
+			}
+		}
+		foreach(QString modname, guimod_list){
 			AddGuiComponent(modname, root, ResMgr);
 		}
-
-    }
+	}
 }
 
 void UpdateCompInfo_with_salomemodules(const QString& salomemodules, const QDir& salomeappdir, SUIT_ResourceMgr* ResMgr)

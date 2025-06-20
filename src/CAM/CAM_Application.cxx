@@ -20,6 +20,7 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
+#include "PyInterp_Interp.h"
 #include "CAM_Application.h"
 
 #include "CAM_Study.h"
@@ -30,6 +31,7 @@
 #include <SUIT_Session.h>
 #include <SUIT_MessageBox.h>
 #include <SUIT_ResourceMgr.h>
+
 #ifndef SUIT_ONLY
 #include <KERNEL_version.h>
 #endif
@@ -831,7 +833,12 @@ void CAM_Application::readModuleList()
   foreach ( QString modName, modList )
     appendModuleInfo( modName.trimmed() );
 
-  if ( myInfoList.isEmpty() ) {
+  PyLockWrapper lck; // acquire GIL
+  PyObjWrapper extutilities = PyImport_ImportModule((char*)"SalomeOnDemandTK.extension_utilities");
+  PyObjWrapper is_salome_on_demand = PyObject_CallMethod(
+      extutilities, (char*)"is_salome_on_demand",(char *)"");
+
+  if ( myInfoList.isEmpty() && !is_salome_on_demand ) {
     if ( desktop() && desktop()->isVisible() )
       SUIT_MessageBox::warning( desktop(), tr( "Warning" ), tr( "Modules list is empty" ) );
     else

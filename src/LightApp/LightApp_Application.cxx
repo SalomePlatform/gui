@@ -1130,6 +1130,16 @@ bool LightApp_Application::addUserModule( const QString& name, const QString& ro
   // load translations
   resMgr->loadLanguage(name);
 
+  QStringList ModuleResList;
+  QStringList xmlfile_list = QStringList{"LightApp.xml", "SalomeApp.xml", "SalomeAppSL.xml"};
+  for( const QString& xmlfile : xmlfile_list ){
+    QString xmlfile_path = Qtx::joinPath( QStringList() <<resDir << xmlfile);
+    ModuleResList.append(getParameterNamesFromSection(xmlfile_path, "resources"));
+  }
+  QSet<QString> ModuleResSet= ModuleResList.toSet();
+  for(const QString& plgname : ModuleResSet)
+    resMgr->loadLanguage(plgname);
+
   // Do all the GUI related stuff only if the module supports that.
   // We already did check for GUI inside CAM_Application::appendModuleInfo, but
   // need to do that again.
@@ -6111,4 +6121,40 @@ void LightApp_Application::removeHelpItems( const QString& modTitle )
       setMenuShown( id, false );
     myHelpItems.remove( modName );
   }
+}
+
+//Tool function which parse xml (SalomeApp.xml) and give all parameter name
+QStringList getParameterNamesFromSection(const QString &xmlFilePath, const QString &sectionName) {
+    QStringList parameterNames;
+
+    QFile file(xmlFilePath);
+    if (!file.open(QIODevice::ReadOnly)) {
+        MESSAGE("Can not open file "+ xmlFilePath.toStdString());
+        return parameterNames;
+    }
+
+    QDomDocument doc;
+    if (!doc.setContent(&file)) {
+        MESSAGE("Can not set content from file "+ xmlFilePath.toStdString());
+        file.close();
+        return parameterNames;
+    }
+    file.close();
+
+    QDomElement root = doc.documentElement();
+    QDomNodeList sections = root.elementsByTagName("section");
+
+    for (int i = 0; i < sections.count(); ++i) {
+        QDomElement section = sections.at(i).toElement();
+        if (section.attribute("name") == sectionName) {
+            QDomNodeList parameters = section.elementsByTagName("parameter");
+            for (int j = 0; j < parameters.count(); ++j) {
+                QDomElement param = parameters.at(j).toElement();
+                parameterNames << param.attribute("name");
+            }
+            break;
+        }
+    }
+
+    return parameterNames;
 }

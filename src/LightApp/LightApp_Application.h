@@ -39,6 +39,7 @@
 #include <QPixmap>
 #include <QPointer>
 #include <QStringList>
+#include <QDomDocument>
 
 class LogWindow;
 class QtxInfoPanel;
@@ -373,6 +374,9 @@ protected:
 
   friend void LightAppCleanUpAppResources();
 };
+
+//Tool function which parse xml (SalomeApp.xml) and give all parameter name
+QStringList getParameterNamesFromSection(const QString &xmlFilePath, const QString &sectionName);
 
 #ifdef WIN32
 #pragma warning( default:4251 )

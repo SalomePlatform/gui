@@ -116,7 +116,7 @@ bool LightApp_ExtInfoDlg::fillExtListWidget(QTableWidget* extListWidget) const
   PyLockWrapper lck; // acquire GIL
   PyObjWrapper extensionQuery = PyImport_ImportModule((char*)"SalomeOnDemandTK.extension_query");
   auto extRootDir = getenv("SALOME_APPLICATION_DIR");
-  PyObjWrapper extInfoDict = PyObject_CallMethod(extensionQuery, (char*)"ext_info_dict", (char*)"s", extRootDir);
+  PyObjWrapper extInfoDict = PyObject_CallMethod(extensionQuery, (char*)"ext_info_list", (char*)"s", extRootDir);
   if (!extInfoDict)
   {
     PyErr_Print();

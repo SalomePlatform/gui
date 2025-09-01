@@ -22,9 +22,9 @@
 #
 
 # Intialize the geompy factory with the active study
-import salome
+from salome.kernel import salome
 
-import GEOM
+from salome.kernel import GEOM
 from salome.geom import geomBuilder
 geompy = geomBuilder.New()
 

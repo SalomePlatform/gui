@@ -51,7 +51,7 @@ bool SalomeApp_PyInterp::initContext()
 {
   bool ok = PyConsole_Interp::initContext();
   if ( ok ) {
-    int ret = PyRun_SimpleString( "import salome_iapp; salome_iapp.IN_SALOME_GUI = True" );
+    int ret = PyRun_SimpleString( "from salome.kernel import salome_iapp; salome_iapp.IN_SALOME_GUI = True" );
     ok = ok && (ret == 0);
   }
   return ok;
@@ -70,13 +70,13 @@ int SalomeApp_PyInterp::beforeRun()
       foreach( QString path, paths )
         simpleRun( QString( "import sys; sys.path.append('%1')" ).arg( path ).toUtf8().constData(), false );
     }
-    int ret = simpleRun( "from Help import *", false );
+    int ret = simpleRun( "from salome.kernel.Help import *", false );
     if ( ret )
       return ret;
   }
   if ( myFirstInitStudy ) {
     myFirstInitStudy = false;
-    int ret = simpleRun( "import salome", false );
+    int ret = simpleRun( "from salome.kernel import salome", false );
     if ( ret )
       return ret;
     ret = simpleRun( "salome.salome_init(embedded=True)", false );
@@ -100,6 +100,6 @@ void SalomeApp_PyInterp::initStudy()
 void SalomeApp_PyInterp::closeContext()
 {
   myFirstInitStudy = false;
-  simpleRun( "import salome", false );
+  simpleRun( "from salome.kernel import salome", false );
   simpleRun( "salome.salome_close()", false );
 }

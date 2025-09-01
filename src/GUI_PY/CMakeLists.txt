@@ -47,17 +47,17 @@ SET(_bin_SCRIPTS
 )
 
 SALOME_CONFIGURE_FILE(qtsalome.py.in qtsalome.py)
-SALOME_CONFIGURE_FILE(__init__.py __init__.py INSTALL ${SALOME_INSTALL_PYTHON}/salome/gui)
+SALOME_CONFIGURE_FILE(__init__.py __init__.py INSTALL ${SALOME_GUI_INSTALL_PYTHON}/salome/gui)
 
 SET(_gen_SCRIPTS
     ${CMAKE_CURRENT_BINARY_DIR}/qtsalome.py
 )
 
 # --- rules ---
-SALOME_INSTALL_SCRIPTS("${_gen_SCRIPTS}" ${SALOME_INSTALL_PYTHON})
-SALOME_INSTALL_SCRIPTS("${_other_SCRIPTS}" ${SALOME_INSTALL_PYTHON}/salome/gui)
+SALOME_INSTALL_SCRIPTS("${_gen_SCRIPTS}" ${SALOME_GUI_INSTALL_PYTHON})
+SALOME_INSTALL_SCRIPTS("${_other_SCRIPTS}" ${SALOME_GUI_INSTALL_PYTHON}/salome/gui)
 SALOME_INSTALL_SCRIPTS("${_bin_SCRIPTS}" ${SALOME_INSTALL_SCRIPT_DATA})
-SALOME_INSTALL_SCRIPTS("${_pyuic_SCRIPTS}" ${SALOME_INSTALL_PYTHON}/salome/gui TARGET_NAME _target_name_pyuic_py)
+SALOME_INSTALL_SCRIPTS("${_pyuic_SCRIPTS}" ${SALOME_GUI_INSTALL_PYTHON}/salome/gui TARGET_NAME _target_name_pyuic_py)
 # add dependency of compiled py files on uic files in order
 # to avoid races problems when compiling in parallel
 ADD_DEPENDENCIES(${_target_name_pyuic_py} ${_target_name_pyuic})

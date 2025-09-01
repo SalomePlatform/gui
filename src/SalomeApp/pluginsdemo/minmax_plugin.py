@@ -28,8 +28,8 @@ def minmax(context):
 
   from minmax_ui import Ui_Dialog
 
-  import salome
-  import SMESH
+  from salome.kernel import salome
+  from salome.kernel import SMESH
   from salome.smesh import smeshBuilder
   smesh = smeshBuilder.New()
 

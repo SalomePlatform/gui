@@ -19,10 +19,10 @@
 # Author : Adrien BRUNETON (CEA)
 #
 
-import salome
+from salome.kernel import salome
 from omniORB import CORBA
 from SALOME_NamingServicePy import SALOME_NamingServicePy_i
-import SALOMEDS
+from salome.kernel import SALOMEDS
 
 from PVServer_ServiceLoader import PVServer_ServiceLoader
 import PVSERVER_ORB
@@ -57,7 +57,7 @@ __service__ = None
 __serviceLoader__ = None
 def getService():
     global __service__, __serviceLoader__
-    import KernelBasis
+    from salome.kernel import KernelBasis
     containerName = "FactoryServer"
     if KernelBasis.getSSLMode():
         if __service__ is None:

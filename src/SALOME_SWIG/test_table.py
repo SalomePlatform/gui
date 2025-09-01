@@ -24,9 +24,9 @@
 # File   : test_table.py
 # Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 #
-import salome
+from salome.kernel import salome
 import math
-import SALOMEDS
+from salome.kernel import SALOMEDS
 
 # >>> Getting study builder ==================================================
 myStudy = salome.myStudy

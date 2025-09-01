@@ -20,8 +20,8 @@
 #
 
 import PVSERVER_ORB__POA
-import SALOME_ComponentPy
-import SALOME_Embedded_NamingService_ClientPy
+from salome.kernel import SALOME_ComponentPy
+from salome.kernel import SALOME_Embedded_NamingService_ClientPy
 from PVSERVER_impl import PVSERVER_impl, MESSAGE 
     
 class PVSERVER(PVSERVER_ORB__POA.PVSERVER_Gen,

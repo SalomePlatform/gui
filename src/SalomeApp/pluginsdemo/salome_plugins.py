@@ -26,11 +26,11 @@ DEMO_IS_ACTIVATED = False
 if DEMO_IS_ACTIVATED:
   # Check that GEOM and SMESH modules are present
   try:
-    import GEOM
+    from salome.kernel import GEOM
     from salome.geom import geomBuilder
     geompy = geomBuilder.New()
     
-    import SMESH, SALOMEDS
+    from salome.kernel import SMESH, SALOMEDS
     from salome.smesh import smeshBuilder
     smesh =  smeshBuilder.New()
   except:
@@ -41,10 +41,10 @@ if DEMO_IS_ACTIVATED:
   # Example 1: creation of basic objects.
   # The plugin function is implemented here and declared in the pluginsmanager.
   #
-  import salome
+  from salome.kernel import salome
 
   def trihedron(context):
-      import GEOM
+      from salome.kernel import GEOM
       from salome.geom import geomBuilder
 
       # Intialize the geompy factory with the active study
@@ -71,7 +71,7 @@ if DEMO_IS_ACTIVATED:
   # -------------------------------------------------------------------------
   # Example 1 bis: creation of basic objects and automatic display
   def trihedron_withdisplay(context):
-      import GEOM
+      from salome.kernel import GEOM
       from salome.geom import geomBuilder
 
       # Intialize the geompy factory with the active study
@@ -207,7 +207,7 @@ if DEMO_IS_ACTIVATED:
       if previewShapeEntry is not None:
           deletePreviewShape()
 
-  import SALOMEDS
+  from salome.kernel import SALOMEDS
   PREVIEW_COLOR=SALOMEDS.Color(1,0.6,1) # pink
 
   def applyCallback():
@@ -260,7 +260,7 @@ if DEMO_IS_ACTIVATED:
 # Example 3: run a shell session in a xterm to get a SALOME python console
 def runSalomeShellSession(context):
     import os,subprocess
-    import salome_version
+    from salome.kernel import salome_version
     import platform
     from PyQt5.Qt import QMessageBox
     from SalomePyQt import SalomePyQt
@@ -298,7 +298,7 @@ salome_pluginsmanager.AddFunction('SALOME shell session',
 # Example 4: run CODE
 def runCodeEditor(context):
     import os,subprocess
-    import salome_version
+    from salome.kernel import salome_version
     import shutil
     from PyQt5.Qt import QMessageBox
     from SalomePyQt import SalomePyQt

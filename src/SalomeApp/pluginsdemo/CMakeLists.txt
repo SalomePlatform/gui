@@ -58,7 +58,7 @@ SET(_helper_SCRIPTS
 
 # --- rules ---
 
-SALOME_INSTALL_SCRIPTS("${_helper_SCRIPTS}" ${SALOME_INSTALL_PYTHON})
+SALOME_INSTALL_SCRIPTS("${_helper_SCRIPTS}" ${SALOME_GUI_INSTALL_PYTHON})
 SALOME_INSTALL_SCRIPTS("${_plugins_SCRIPTS}" ${SALOME_GUI_INSTALL_PLUGINS}/demo DEF_PERMS)
 SALOME_INSTALL_SCRIPTS("${_pyuic_SCRIPTS}" ${SALOME_GUI_INSTALL_PLUGINS}/demo DEF_PERMS TARGET_NAME _target_name_pyuic_py)
 # add dependency of compiled py files on uic files in order

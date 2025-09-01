@@ -19,7 +19,7 @@
 #
 # Author : Guillaume Boulant (EDF)
 
-import salome
+from salome.kernel import salome
 
 DEFAULT_RADIUS = 100
 DEFAULT_LENGTH = 300
@@ -63,7 +63,7 @@ def createGeometryWithPartition(radius=DEFAULT_RADIUS, length=DEFAULT_LENGTH, wi
 def createMesh(shape):
     '''This function creates the mesh of the specified shape on the current study'''
     print("TUBE: creating the mesh ...")
-    import SMESH
+    from salome.kernel import SMESH
     from salome.smesh import smeshBuilder
     smesh = smeshBuilder.New()
 
@@ -103,7 +103,7 @@ def exportModel(mesh, filename):
     This exports the mesh to the specified filename in the med format
     '''
     print("TUBE: exporting mesh to file %s ..."%filename)
-    import SMESH
+    from salome.kernel import SMESH
     mesh.ExportMED(filename)
 
 

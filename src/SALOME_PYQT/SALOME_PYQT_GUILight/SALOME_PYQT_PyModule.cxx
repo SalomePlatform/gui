@@ -1744,7 +1744,7 @@ void PyModuleHelper::initInterp()
     // ... first get python lock
     PyLockWrapper aLock; // Acquire GIL
     // ... then import a module
-    PyObjWrapper aMod = PyImport_ImportModule( "salome" );
+    PyObjWrapper aMod = PyImport_ImportModule( "salome.kernel.salome" );
     if ( !aMod ) {
       // Error!
       PyErr_Print();

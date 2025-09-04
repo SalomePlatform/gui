@@ -24,8 +24,8 @@
 # File   : visu_many_objects.py
 # Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 #
-import salome
-import SALOMEDS
+from salome.kernel import salome
+from salome.kernel import SALOMEDS
 
 # >>> Getting study builder ==================================================
 myStudy = salome.myStudy

@@ -24,8 +24,8 @@ import os
 
 from qtsalome import *
 
-import salome
-from salome.kernel.studyedit import getStudyEditor
+from salome.kernel import salome
+from salome.kernel.salome.kernel.studyedit import getStudyEditor
 from salome.kernel.parametric import study_exchange_vars
 
 # ---------------------------------- #

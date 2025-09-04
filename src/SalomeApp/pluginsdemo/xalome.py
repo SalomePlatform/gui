@@ -27,9 +27,9 @@
 #
 # (gboulant - 09/02/2012)
 #
-import salome
-from salome.kernel.studyedit import getStudyEditor
-from salome.kernel.services import IDToSObject, IDToObject
+from salome.kernel import salome
+from salome.kernel.salome.kernel.studyedit import getStudyEditor
+from salome.kernel.salome.kernel.services import IDToSObject, IDToObject
 from salome.geom import geomtools
 
 # ======================================================================
@@ -158,7 +158,7 @@ def TEST_createAndDeleteShape():
     entry from the study, and finally destroy the underlying GEOM
     object).
     """
-    import salome
+    from salome.kernel import salome
     salome.salome_init()
     study = salome.myStudy
 

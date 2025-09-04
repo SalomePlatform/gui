@@ -52,13 +52,13 @@ def addvars2notebook(filename):
         stream = open(filename)
         content = stream.read()
         stream.close()
-        fields = content.split("import iparameters")
+        fields = content.split("from salome.kernel import iparameters")
         if len(fields) == 2:
             begin = fields[0]
             if begin.find("## NoteBook E.A.") >= 0:
                 begin = begin.split("## NoteBook E.A.")[0]
                 pass
-            end = "import iparameters" + fields[1]
+            end = "from salome.kernel import iparameters" + fields[1]
             content = begin
             content += "## NoteBook E.A.\n"
             for var, value in vars_and_values:

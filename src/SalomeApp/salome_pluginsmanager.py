@@ -84,7 +84,7 @@ context attributes:
 import os,sys,traceback
 from qtsalome import *
 
-import salome
+from salome.kernel import salome
 
 SEP=":"
 if sys.platform == "win32":
@@ -137,8 +137,8 @@ def findMenu(lmenu,menu):
 
 PLUGIN_PATH_PATTERN="share/salome/plugins"
 MATCH_ENDING_PATTERN="_plugins.py"
-from salome.kernel.syshelper import walktree
-from salome.kernel.logger import Logger
+from salome.kernel.salome.kernel.syshelper import walktree
+from salome.kernel.salome.kernel.logger import Logger
 #from salome.kernel.termcolor import GREEN
 logger=Logger("PluginsManager") #,color=GREEN)
 # VSR 21/11/2011 : do not show infos in the debug mode

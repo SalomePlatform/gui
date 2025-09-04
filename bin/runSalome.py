@@ -30,7 +30,7 @@ import json
 import subprocess
 from salomeContextUtils import ScriptAndArgsObjectEncoder
 import runSalomeNoServer
-import runSalomeCommon
+from salome.kernel import runSalomeCommon
 import platform
 from launchConfigureParser import verbosity_nam
 import logging
@@ -54,9 +54,9 @@ def kill_salome(args):
 
 def startGUI(clt):
     """Salome Session Graphic User Interface activation"""
-    import Engines
-    import SALOME
-    import SALOMEDS
+    from salome.kernel import Engines
+    from salome.kernel import SALOME
+    from salome.kernel import SALOMEDS
     import SALOME_ModuleCatalog
     import SALOME_Session_idl
     session=clt.waitNS("/Kernel/Session",SALOME.Session)
@@ -222,7 +222,7 @@ def foreGround(args, ior_fakens_filename):
         return
     import CORBA
     #import Engines
-    import SALOME
+    from salome.kernel import SALOME
     from time import sleep
     orb = CORBA.ORB_init([''], CORBA.ORB_ID)
     ior_fakens = None

@@ -25,7 +25,7 @@ from SALOME_NamingServicePy import SALOME_NamingServicePy_i
 from salome.kernel import SALOMEDS
 
 from PVServer_ServiceLoader import PVServer_ServiceLoader
-import PVSERVER_ORB
+from salome.kernel import PVSERVER_ORB
 
 ###
 # Get verbose level

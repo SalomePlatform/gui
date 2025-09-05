@@ -24,7 +24,7 @@ import socket
 from time import sleep
 import os
 import sys
-from SALOME import SALOME_Exception, ExceptionStruct, INTERNAL_ERROR
+from salome.kernel.SALOME import SALOME_Exception, ExceptionStruct, INTERNAL_ERROR
 #from SALOME_utilities import MESSAGE
 
 def MESSAGE(m):

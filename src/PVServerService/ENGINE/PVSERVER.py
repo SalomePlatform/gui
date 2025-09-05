@@ -19,7 +19,7 @@
 # Author : Adrien BRUNETON (CEA)
 #
 
-import PVSERVER_ORB__POA
+from salome.kernel import PVSERVER_ORB__POA
 from salome.kernel import SALOME_ComponentPy
 from salome.kernel import SALOME_Embedded_NamingService_ClientPy
 from PVSERVER_impl import PVSERVER_impl, MESSAGE 

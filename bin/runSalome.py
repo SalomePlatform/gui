@@ -57,8 +57,8 @@ def startGUI(clt):
     from salome.kernel import Engines
     from salome.kernel import SALOME
     from salome.kernel import SALOMEDS
-    import SALOME_ModuleCatalog
-    import SALOME_Session_idl
+    from salome.kernel import SALOME_ModuleCatalog
+    from salome.kernel import SALOME_Session_idl
     session=clt.waitNS("/Kernel/Session",SALOME.Session)
     session.GetInterface()
 

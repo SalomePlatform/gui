@@ -1035,7 +1035,7 @@ bool SalomeApp_Study::openDataModel( const QString& studyName, CAM_DataModel* dm
       try {
         aBuilder->LoadWith( aSComp, std::string( anEngine.toLatin1() ) );
       }
-      catch( const SALOME::SALOME_Exception& ) {
+      catch( const SALOME_CMOD::SALOME_Exception& ) {
         // Oops, something went wrong while loading -> return an error
         return false;
       }

@@ -342,12 +342,12 @@ namespace
     bool myDebug;
   };
 
-  //! Class which calls SALOME::Session::GetInterface() from another thread
+  //! Class which calls SALOME_CMOD::Session::GetInterface() from another thread
   //  to avoid mutual lock if called from the same thread as main()
   class GetInterfaceThread : public QThread
   {
   public:
-    GetInterfaceThread(SALOME::Session_var s) : session(s)
+    GetInterfaceThread(SALOME_CMOD::Session_var s) : session(s)
     {
       start();
     }
@@ -358,11 +358,11 @@ namespace
       if (!CORBA::is_nil(session))
         session->GetInterface();
       else
-        std::cerr << "FATAL ERROR: SALOME::Session object is nil! Cannot display GUI" << std::endl;
+        std::cerr << "FATAL ERROR: SALOME_CMOD::Session object is nil! Cannot display GUI" << std::endl;
     }
 
   private:
-    SALOME::Session_var session;
+    SALOME_CMOD::Session_var session;
   };
 
   //! Checks command line for presense of given option(s).
@@ -403,7 +403,7 @@ public:
   void connectToNSIfNeeded(CORBA::ORB_ptr orb) { _NS.reset(new SALOME_NamingService(orb)); }
   void shutdownCORBAStufIfNeeded(bool shutdownAll, CORBA::ORB_ptr orb);
   void killOtherServersIfNeeded() { SALOME_LifeCycleCORBA::killOmniNames(); }
-  SALOME::Session_var getSession();
+  SALOME_CMOD::Session_var getSession();
   void shutdownRemoteServersIfNeeded(bool remoteLauncher);
 private:
   std::unique_ptr<SALOME_NamingService> _NS;
@@ -417,7 +417,7 @@ public:
   void connectToNSIfNeeded(CORBA::ORB_ptr orb) { /*! nothing */ }
   void shutdownCORBAStufIfNeeded(bool shutdownAll, CORBA::ORB_ptr orb) { /*! nothing */ }
   void killOtherServersIfNeeded() { /*! nothing */ }
-  SALOME::Session_var getSession();
+  SALOME_CMOD::Session_var getSession();
   void shutdownRemoteServersIfNeeded(bool remoteLauncher) { /*! nothing */ }
 };
 
@@ -446,10 +446,10 @@ void GUIAppOldStyle::shutdownCORBAStufIfNeeded(bool shutdownAll, CORBA::ORB_ptr 
     init->explicit_destroy();
 }
 
-SALOME::Session_var GUIAppOldStyle::getSession()
+SALOME_CMOD::Session_var GUIAppOldStyle::getSession()
 {
   CORBA::Object_var obj = _NS->Resolve("/Kernel/Session");
-  SALOME::Session_var session = SALOME::Session::_narrow(obj);
+  SALOME_CMOD::Session_var session = SALOME_CMOD::Session::_narrow(obj);
   return session;
 }
 void GUIAppOldStyle::shutdownRemoteServersIfNeeded(bool remoteLauncher)
@@ -457,9 +457,9 @@ void GUIAppOldStyle::shutdownRemoteServersIfNeeded(bool remoteLauncher)
   shutdownServers(_NS.get(), remoteLauncher);
 }
 
-SALOME::Session_var GUIAppNewStyle::getSession()
+SALOME_CMOD::Session_var GUIAppNewStyle::getSession()
 {
-  SALOME::Session_var session = GetSessionRefSingleton()->get_future().get();
+  SALOME_CMOD::Session_var session = GetSessionRefSingleton()->get_future().get();
   return session;
 }
 
@@ -748,7 +748,7 @@ int AbstractGUIAppMain(int argc, char **argv)
   }
 
   // Obtain Session interface reference
-  SALOME::Session_var session = self.getSession();
+  SALOME_CMOD::Session_var session = self.getSession();
 
   bool shutdownAll = false;
   bool shutdownSession = false;
@@ -780,8 +780,8 @@ int AbstractGUIAppMain(int argc, char **argv)
       _SessionMutex.unlock();
 
       // Session might be shutdowning here, check status
-      SALOME::StatSession stat = session->GetStatSession();
-      shutdownSession = stat.state == SALOME::shutdown;
+      SALOME_CMOD::StatSession stat = session->GetStatSession();
+      shutdownSession = stat.state == SALOME_CMOD::shutdown;
       if (shutdownSession)
       {
         _SessionMutex.lock(); // lock mutex before leaving loop - it will be unlocked later
@@ -829,7 +829,7 @@ int AbstractGUIAppMain(int argc, char **argv)
           // - StopSesion() (temporarily) or
           // - Shutdown() (permanently)
           stat = session->GetStatSession();
-          shutdownSession = stat.state == SALOME::shutdown;
+          shutdownSession = stat.state == SALOME_CMOD::shutdown;
           // normally "shutdown standalone servers" flag should be false here, if we come from
           // StopSesion() or from Shutdown();
           // but we also have to check if somebody explicitly programmatically closed session,

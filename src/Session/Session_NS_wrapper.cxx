@@ -46,7 +46,7 @@ void CommonActivateSession(CORBA::ORB_var orb, PortableServer::POA_var poa, QMut
     MESSAGE("poa->activate_object(mySALOME_Session)");
     
     CORBA::Object_var obj = mySALOME_Session->_this();
-    SALOME::Session_var objC = SALOME::Session::_narrow(obj);
+    SALOME_CMOD::Session_var objC = SALOME_CMOD::Session::_narrow(obj);
     GetSessionRefSingleton()->set_value(objC);
     CORBA::String_var sior(orb->object_to_string(obj));
     mySALOME_Session->_remove_ref();

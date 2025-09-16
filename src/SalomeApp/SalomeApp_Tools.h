@@ -44,8 +44,8 @@ public:
   static Quantity_Color  color( const QColor& );
   static QColor          color( const Quantity_Color& );
 
-  static QString         ExceptionToString( const SALOME::SALOME_Exception& );
-  static void            QtCatchCorbaException( const SALOME::SALOME_Exception& );
+  static QString         ExceptionToString( const SALOME_CMOD::SALOME_Exception& );
+  static void            QtCatchCorbaException( const SALOME_CMOD::SALOME_Exception& );
 };
 
 #endif

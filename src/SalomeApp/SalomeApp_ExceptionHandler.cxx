@@ -83,7 +83,7 @@ bool SalomeApp_ExceptionHandler::handle( QObject* o, QEvent* e )
   {
     showMessage( title, QString( e.GetMessageString() ) );
   }
-  catch( SALOME::SALOME_Exception& ex)
+  catch( SALOME_CMOD::SALOME_Exception& ex)
   {
     showMessage( title, QString( ex.details.text));
   }

@@ -103,7 +103,7 @@ SALOME_Session_i::~SALOME_Session_i()
 void SALOME_Session_i::NSregister()
 {
   CORBA::Object_var obref=_this();
-  SALOME::Session_var pSession = SALOME::Session::_narrow(obref);
+  SALOME_CMOD::Session_var pSession = SALOME_CMOD::Session::_narrow(obref);
   try
     {
       _NS->Register(pSession, "/Kernel/Session");
@@ -198,7 +198,7 @@ void SALOME_Session_i::Shutdown()
 }
 
 /*!
-  Send a SALOME::StatSession structure (see idl) to the client
+  Send a SALOME_CMOD::StatSession structure (see idl) to the client
   (presence of GUI)
 */
 /*class QtLock
@@ -209,7 +209,7 @@ public:
 };*/
 
 
-SALOME::StatSession SALOME_Session_i::GetStatSession()
+SALOME_CMOD::StatSession SALOME_Session_i::GetStatSession()
 {
   // update Session state
   _GUIMutex->lock();
@@ -223,13 +223,13 @@ SALOME::StatSession SALOME_Session_i::GetStatSession()
   }
 
   // getting stat info
-  SALOME::StatSession_var myStats = new SALOME::StatSession;
+  SALOME_CMOD::StatSession_var myStats = new SALOME_CMOD::StatSession;
   if (activeStudy)
-    myStats->state = SALOME::running ;
+    myStats->state = SALOME_CMOD::running ;
   else if (_isShuttingDown)
-    myStats->state = SALOME::shutdown ;
+    myStats->state = SALOME_CMOD::shutdown ;
   else
-    myStats->state = SALOME::asleep ;
+    myStats->state = SALOME_CMOD::asleep ;
   myStats->activeGUI = _isGUI ;
 
   _GUIMutex->unlock();
@@ -312,9 +312,9 @@ void SALOME_Session_i::emitMessageOneWay(const char* theMessage)
   emitMessage(theMessage);
 }
 
-SALOME::StringSeq* SALOME_Session_i::getSelection()
+SALOME_CMOD::StringSeq* SALOME_Session_i::getSelection()
 {
-  SALOME::StringSeq_var selection = new SALOME::StringSeq;
+  SALOME_CMOD::StringSeq_var selection = new SALOME_CMOD::StringSeq;
   _GUIMutex->lock();
   if ( SUIT_Session::session() ) {
     LightApp_Application* app = dynamic_cast<LightApp_Application*>( SUIT_Session::session()->activeApplication() );

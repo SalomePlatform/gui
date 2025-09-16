@@ -38,7 +38,7 @@ class QMutex;
 class QWaitCondition;
 class SALOME_NamingService_Abstract;
 
-class SESSION_EXPORT SALOME_Session_i :  public virtual POA_SALOME::Session, public virtual PortableServer::ServantBase
+class SESSION_EXPORT SALOME_Session_i :  public virtual POA_SALOME_CMOD::Session, public virtual PortableServer::ServantBase
 {
 public:
   SALOME_Session_i(int argc, char ** argv, CORBA::ORB_ptr orb, PortableServer::POA_ptr poa, QMutex* GUIMutex, QWaitCondition* GUILauncher);
@@ -55,7 +55,7 @@ public:
   void StopSession();
 
   //! Get session state
-  SALOME::StatSession GetStatSession();
+  SALOME_CMOD::StatSession GetStatSession();
 
   //! Shutdown session
   void Shutdown();
@@ -73,7 +73,7 @@ public:
   bool restoreVisualState(CORBA::Long theSavePoint);
 
   //! Get list of selected entities
-  SALOME::StringSeq* getSelection();
+  SALOME_CMOD::StringSeq* getSelection();
 
   //! Emit a qt signal from the session GUI desktop window.
   void emitMessage(const char* theMessage);

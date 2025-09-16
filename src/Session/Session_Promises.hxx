@@ -25,4 +25,4 @@
 
 #include <future>
 
-SESSION_EXPORT std::promise<SALOME::Session_var> *GetSessionRefSingleton();
+SESSION_EXPORT std::promise<SALOME_CMOD::Session_var> *GetSessionRefSingleton();

@@ -19,8 +19,8 @@
 
 #include "Session_Promises.hxx"
 
-std::promise<SALOME::Session_var> *GetSessionRefSingleton()
+std::promise<SALOME_CMOD::Session_var> *GetSessionRefSingleton()
 {
-    static std::promise<SALOME::Session_var> _my_unique_study_ref;
+    static std::promise<SALOME_CMOD::Session_var> _my_unique_study_ref;
     return &_my_unique_study_ref;
 }

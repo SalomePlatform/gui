@@ -442,7 +442,7 @@ void Session_ServerCheck<MY_NS>::run()
 
     try {
       CORBA::Object_var obj = MY_NS::forServerChecker("/Kernel/Session", args.argc(), args.argv());
-      SALOME::Session_var session = SALOME::Session::_narrow( obj );
+      SALOME_CMOD::Session_var session = SALOME_CMOD::Session::_narrow( obj );
       if ( !CORBA::is_nil( session ) ) {
         MESSAGE( "/Kernel/Session is found" );
         session->ping();

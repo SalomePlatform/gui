@@ -55,14 +55,14 @@ QColor SalomeApp_Tools::color( const Quantity_Color& c )
 /*!
   Gets message on exception \a S_ex.
 */
-QString SalomeApp_Tools::ExceptionToString( const SALOME::SALOME_Exception& S_ex )
+QString SalomeApp_Tools::ExceptionToString( const SALOME_CMOD::SALOME_Exception& S_ex )
 {
   QString message;
   
   switch ( S_ex.details.type )
   {
-  case SALOME::COMM:
-  case SALOME::INTERNAL_ERROR:
+  case SALOME_CMOD::COMM:
+  case SALOME_CMOD::INTERNAL_ERROR:
     {
             message = QString( S_ex.details.text );
             QString source( S_ex.details.sourceFile );
@@ -71,7 +71,7 @@ QString SalomeApp_Tools::ExceptionToString( const SALOME::SALOME_Exception& S_ex
             message = message + " \n" + source + " : " + line;
       break;
     }
-  case SALOME::BAD_PARAM:
+  case SALOME_CMOD::BAD_PARAM:
     {
             message = QString( S_ex.details.text );
 #ifdef _DEBUG_
@@ -98,7 +98,7 @@ QString SalomeApp_Tools::ExceptionToString( const SALOME::SALOME_Exception& S_ex
 /*!
   Gets message box on exception \a S_ex.
 */
-void SalomeApp_Tools::QtCatchCorbaException( const SALOME::SALOME_Exception& S_ex )
+void SalomeApp_Tools::QtCatchCorbaException( const SALOME_CMOD::SALOME_Exception& S_ex )
 {
   QString message = ExceptionToString( S_ex );
 
@@ -106,11 +106,11 @@ void SalomeApp_Tools::QtCatchCorbaException( const SALOME::SALOME_Exception& S_e
   bool error = true;
   switch ( S_ex.details.type )
   {
-  case SALOME::COMM:
-  case SALOME::INTERNAL_ERROR:
+  case SALOME_CMOD::COMM:
+  case SALOME_CMOD::INTERNAL_ERROR:
     title = QObject::tr( "Engine Error" );
     break;
-  case SALOME::BAD_PARAM:
+  case SALOME_CMOD::BAD_PARAM:
     error = false;
     title = QObject::tr( "Engine Warning" );
           break;

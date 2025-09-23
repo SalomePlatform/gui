@@ -37,7 +37,7 @@
 #
 
 from salome.kernel import salome
-from salome.kernel import services
+from salome.kernel.salome.kernel import services
 
 #
 # Get SALOME PyQt interface to manipulate the GUI context

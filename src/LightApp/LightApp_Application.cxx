@@ -1294,10 +1294,15 @@ void LightApp_Application::onExtRemoving(const QString& title)
 
   // Module's content was already removed on python remove_salomex call,
   // then all we do next - just remove UI items.
-  // Get the current module's name
-  const QString moduleInnerName(PyUnicode_AsUTF8(removedModules));
+  for (Py_ssize_t pos = 0; pos < PyList_Size(removedModules); ++pos)
+  {
+    // Get the current module's name
+    auto moduleNameItem = PyList_GetItem(removedModules, pos);
+    const QString moduleInnerName(PyUnicode_AsUTF8(moduleNameItem));
 
-  removeUserModule(moduleInnerName, moduleAction);
+    removeUserModule(moduleInnerName, moduleAction);
+  }
+
 
   // Remove an ext from UI
   if (moduleAction)

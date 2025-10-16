@@ -26,4 +26,8 @@ SALOME_CONFIGURE_FILE(VERSION.in VERSION INSTALL ${SALOME_INSTALL_BINS})
 SET(_bin_scripts
     runLightSalome.csh runLightSalome.sh gui_setenv.py runSalome.py
 )
+SET(IMPLFROMSCRIPT
+    runSalome_impl.py
+)
 SALOME_INSTALL_SCRIPTS("${_bin_scripts}" ${SALOME_INSTALL_SCRIPT_SCRIPTS})
+SALOME_INSTALL_SCRIPTS("${IMPLFROMSCRIPT}" ${SALOME_GUI_INSTALL_PYTHON}/salome/kernel)

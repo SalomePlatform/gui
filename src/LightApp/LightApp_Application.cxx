@@ -1276,9 +1276,9 @@ void LightApp_Application::onExtRemoving(const QString& title)
 
   // Import Python module that manages SALOME extensions.
   PyLockWrapper lck; // acquire GIL
-  PyObjWrapper extensionRemover = PyImport_ImportModule((char*)"SalomeOnDemandTK.extension_remover");
+  PyObjWrapper extensionRemover = PyImport_ImportModule((char*)"salome.kernel.extension_remover_GUI");
   PyObjWrapper removedModules = PyObject_CallMethod(
-      extensionRemover, (char*)"remove_salomex", (char*)"ss", extRootDir, extName.c_str());
+      extensionRemover, (char*)"remove_salomex_withgui", (char*)"ss", extRootDir, extName.c_str());
   if (!removedModules || removedModules == Py_None)
   {
     SUIT_MessageBox::warning(desktop(), tr("WRN_WARNING"), tr("WRN_FAILED_REMOVE_EXTENSION").arg(title));

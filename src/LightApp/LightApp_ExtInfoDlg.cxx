@@ -33,7 +33,8 @@
 #pragma pop_macro("slots")
 
 #include <QHBoxLayout>
-
+#include <QScrollArea>
+#include <QSplitter>
 // Show extensions info
 #include <QTableWidget>
 #include <QTableWidgetItem>
@@ -82,7 +83,9 @@ void GraphWrapper::init(char *name, Agdesc_t desc /* = Agstrictdirected */, Agdi
   m_gvc = gvContext();
 }
 
-/*!Constructor.*/
+/*!Constructor.
+Creates the array and image in a splitter
+*/
 LightApp_ExtInfoDlg::LightApp_ExtInfoDlg(QWidget* parent)
 : QtxDialog(parent, true, true, ButtonFlags::OK)
 {
@@ -90,15 +93,22 @@ LightApp_ExtInfoDlg::LightApp_ExtInfoDlg(QWidget* parent)
 
   setObjectName("salome_ext_info_dialog");
   setWindowTitle(tr("EXT_INFO_CAPTION"));
-  setSizeGripEnabled(true);
+  setSizeGripEnabled(true); // allows resizing by the corner
   setButtonPosition(ButtonPosition::Center, ButtonFlags::OK);
 
-  auto extInfoWiget = getExtListWidget(mainFrame());
-  auto extTreeWiget = getExtTreeWidget(mainFrame());
+  // Create the main widgets
+  auto extInfoWidget = getExtListWidget(mainFrame());
+  auto extTreeWidget = getExtTreeWidget(mainFrame());
+
+  // Horizontal splitter: array | picture
+  auto splitter = new QSplitter(Qt::Horizontal, mainFrame());
+  splitter->addWidget(extInfoWidget);
+  splitter->addWidget(extTreeWidget);
+  splitter->setStretchFactor(0, 3);
+  splitter->setStretchFactor(1, 0);
 
   auto layout = new QHBoxLayout(mainFrame());
-  layout->addWidget(extInfoWiget);
-  layout->addWidget(extTreeWiget);
+  layout->addWidget(splitter);
 }
 
 /*!Destructor.*/
@@ -149,26 +159,33 @@ bool LightApp_ExtInfoDlg::fillExtListWidget(QTableWidget* extListWidget) const
   // Iterate name:info_list dictionary
   while (PyDict_Next(extInfoDict, &keyNamePos, &keyName, &infoList))
   {
-    auto widgetItem = makeTableWidgetItem(keyName);
+    // ---- Name column ----
+    auto nameItem = makeTableWidgetItem(keyName);
 
     // keyNamePos is already 1 on the first iteration, so we need to decrease it 
-    extListWidget->setItem(keyNamePos - 1, 0, widgetItem);
+    extListWidget->setItem(keyNamePos - 1, 0, nameItem);
 
-    // Iterate an extension info list
-    for (Py_ssize_t infoPos = 0; infoPos < PyList_Size(infoList); ++infoPos)
+    // Tooltip = Description (assume infoList[0] = Description)
+    const char* tooltipStr = nullptr;
+    if (PyList_Size(infoList) >= 1)
     {
-      if (infoPos >= columnCount)
-      {
-        MESSAGE("Number of info items is greater than column count! Skip.\n");
-        break;
-      }
+      PyObject* descriptionObj = PyList_GetItem(infoList, 0);
+      tooltipStr = PyUnicode_AsUTF8(descriptionObj);
+      nameItem->setToolTip(tooltipStr);
+    }
 
-      auto info = PyList_GetItem(infoList, infoPos);
-      widgetItem = makeTableWidgetItem(info);
+    // ---- Size column ----
+    if (PyList_Size(infoList) >= 4) // infoList[3] = Size
+    {
+      PyObject* sizeObj = PyList_GetItem(infoList, 3);
+      auto sizeItem = makeTableWidgetItem(sizeObj);
 
       // keyNamePos started from 1 instead of 0, so decrease
-      // info need to be filled from column 1, so increase
-      extListWidget->setItem(keyNamePos - 1, infoPos + 1, widgetItem);
+      extListWidget->setItem(keyNamePos - 1, 1, sizeItem);
+
+      // Tooltip also on size column
+      if (tooltipStr)
+        sizeItem->setToolTip(tooltipStr);
     }
   }
 
@@ -176,6 +193,11 @@ bool LightApp_ExtInfoDlg::fillExtListWidget(QTableWidget* extListWidget) const
 }
 
 /*! Return widget with info about installed extensions */
+/*!
+  * Creates the extensions table
+  * Columns: Name, Size
+  * Description is displayed as a tooltip
+*/
 QWidget* LightApp_ExtInfoDlg::getExtListWidget(QWidget* parent) const
 {
   MESSAGE("Make a widget to display extensions info...\n");
@@ -184,7 +206,7 @@ QWidget* LightApp_ExtInfoDlg::getExtListWidget(QWidget* parent) const
 
   // Setup the table params
   const QStringList headerLabels = {
-    "Name", "Description", "Author", "Components", "Size"
+    "Name", "Size"
     };
 
   extListWidget->setColumnCount(headerLabels.count());
@@ -306,5 +328,10 @@ QWidget* LightApp_ExtInfoDlg::getExtTreeWidget(QWidget* parent) const
     extTreeWidget->load(renderExtTreeGraph(extTreeGraph));
   }
 
-  return extTreeWidget;
+    // scroll area
+    QScrollArea* extTreeScroll = new QScrollArea(parent);
+    extTreeScroll->setWidget(extTreeWidget);
+    extTreeScroll->setWidgetResizable(false);
+
+    return extTreeScroll;
 }

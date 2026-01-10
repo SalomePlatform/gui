@@ -2162,6 +2162,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
   if ( vmType == PV3DViewer_ViewModel::Type() )
 # endif
   {
+# ifndef DISABLE_SALOMEOBJECT
     viewMgr = new SPV3D_ViewManager( activeStudy(), desktop() );
     SPV3D_ViewModel* vm = dynamic_cast<SPV3D_ViewModel*>( viewMgr->getViewModel() );
     if ( vm )
@@ -2180,6 +2181,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     }
 #endif
   }
+#endif
 
   if ( !viewMgr )
     return 0;

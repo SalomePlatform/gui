@@ -49,7 +49,7 @@ QtViewer_ViewPort::QtViewer_ViewPort( QWidget* theParent )
   setMouseTracking( true );
   setFocusPolicy( Qt::StrongFocus );
 
-  myFitAllGap = 40;
+  myFitAllGap = 0;
 
   myRectBand = nullptr;
   myRectBandStart = QPoint();

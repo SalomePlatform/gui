@@ -37,9 +37,9 @@ class QTX_EXPORT QtxDockWidget : public QDockWidget
   class Watcher;
 
 public:
-  QtxDockWidget( const QString&, QWidget* = 0, Qt::WindowFlags = 0 );
-  QtxDockWidget( const bool, QWidget* = 0, Qt::WindowFlags = 0 );
-  QtxDockWidget( QWidget*, Qt::WindowFlags = 0 );
+  QtxDockWidget( const QString&, QWidget* = 0, Qt::WindowFlags = {} );
+  QtxDockWidget( const bool, QWidget* = 0, Qt::WindowFlags = {} );
+  QtxDockWidget( QWidget*, Qt::WindowFlags = {} );
   virtual ~QtxDockWidget();
 
   virtual QSize   sizeHint() const;

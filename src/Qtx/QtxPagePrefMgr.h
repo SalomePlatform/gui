@@ -783,7 +783,7 @@ private:
 class QtxUserDefinedContent: public QWidget
 {
  public:
-  QtxUserDefinedContent(QWidget* parent = 0, Qt::WindowFlags f = 0 ):QWidget(parent, f) {};
+  QtxUserDefinedContent(QWidget* parent = 0, Qt::WindowFlags f = {} ):QWidget(parent, f) {};
   virtual void store(QtxResourceMgr* theRes, QtxPreferenceMgr* thePref) = 0;
   virtual void retrieve(QtxResourceMgr* theRes, QtxPreferenceMgr* thePref) = 0;
 };

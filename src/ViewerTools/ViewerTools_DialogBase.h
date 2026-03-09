@@ -38,7 +38,7 @@ public:
                          QWidget* theParent,
                          const char* theName = "", 
                          bool theModal = false, 
-                         Qt::WindowFlags theWFalgs = 0);
+                         Qt::WindowFlags theWFalgs = {});
 
   ~ViewerTools_DialogBase();
 

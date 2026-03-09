@@ -45,11 +45,11 @@ class QTX_EXPORT QtxPathDialog : public QtxDialog
 
 protected:
   QtxPathDialog( QWidget* = 0, const bool = true, const bool = false,
-                 const int = Standard, Qt::WindowFlags = 0 );
+                 const int = Standard, Qt::WindowFlags = {} );
 
 public:
   QtxPathDialog( const bool, QWidget* = 0, const bool = true,
-                 const bool = false, const int = Standard, Qt::WindowFlags = 0 );
+                 const bool = false, const int = Standard, Qt::WindowFlags = {} );
   virtual ~QtxPathDialog();
 
   QString            fileName() const;

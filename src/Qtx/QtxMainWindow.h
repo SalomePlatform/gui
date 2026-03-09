@@ -39,7 +39,7 @@ class QTX_EXPORT QtxMainWindow : public QMainWindow
   class Resizer;
 
 public:
-  QtxMainWindow( QWidget* = 0, Qt::WindowFlags = 0 );
+  QtxMainWindow( QWidget* = 0, Qt::WindowFlags = {} );
   virtual ~QtxMainWindow();
 
   bool              isOpaqueResize() const;

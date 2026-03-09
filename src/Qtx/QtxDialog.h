@@ -87,7 +87,7 @@ public:
   } DialogFlags;
   
 public:
-  QtxDialog( QWidget* = 0, bool = false, bool = false, const int = Standard, Qt::WindowFlags = 0 );
+  QtxDialog( QWidget* = 0, bool = false, bool = false, const int = Standard, Qt::WindowFlags = {} );
   virtual ~QtxDialog();
   
   void             setDialogFlags( const int );

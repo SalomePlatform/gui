@@ -72,8 +72,8 @@ public:
   } Flags;
 
 public:
-  QtxColorScale( QWidget* = 0, Qt::WindowFlags = 0 );
-  QtxColorScale( const int, QWidget* = 0, Qt::WindowFlags = 0 );
+  QtxColorScale( QWidget* = 0, Qt::WindowFlags = {} );
+  QtxColorScale( const int, QWidget* = 0, Qt::WindowFlags = {} );
   virtual ~QtxColorScale();
 
   double                minimum() const;

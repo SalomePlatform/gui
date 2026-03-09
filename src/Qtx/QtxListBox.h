@@ -46,7 +46,7 @@ class QTX_EXPORT QtxListBox : public QListWidget//QListBox // This file isn't ye
     Q_OBJECT
 
 public:
-    QtxListBox( QWidget* = 0, const char* = 0, Qt::WindowFlags = 0 );
+    QtxListBox( QWidget* = 0, const char* = 0, Qt::WindowFlags = {} );
     virtual ~QtxListBox();
 
     bool              isEditEnabled() const;

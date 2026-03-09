@@ -107,7 +107,7 @@ public:
   void                split( const int );
   bool                move( QWidget* wid, QWidget* wid_to, const bool before );
 
-  QWidget*            addWindow( QWidget*, Qt::WindowFlags = 0 );
+  QWidget*            addWindow( QWidget*, Qt::WindowFlags = {} );
 
   QByteArray          saveState( int ) const;
   bool                restoreState( const QByteArray&, int );
@@ -219,7 +219,7 @@ public:
   bool                isNull() const;
   bool                isEmpty() const;
 
-  QtxWorkstackChild*  insertWidget( QWidget*, const int = -1, Qt::WindowFlags = 0 );
+  QtxWorkstackChild*  insertWidget( QWidget*, const int = -1, Qt::WindowFlags = {} );
   void                removeWidget( QWidget*, const bool = true );
 
   void                insertChild( QtxWorkstackChild*, const int = -1 );
@@ -312,7 +312,7 @@ class QtxWorkstackChild : public QWidget
   Q_OBJECT
 
 public:
-  QtxWorkstackChild( QWidget*, QWidget* = 0, Qt::WindowFlags = 0 );
+  QtxWorkstackChild( QWidget*, QWidget* = 0, Qt::WindowFlags = {} );
   virtual ~QtxWorkstackChild();
 
   QWidget*            widget() const

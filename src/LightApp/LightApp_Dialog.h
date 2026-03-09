@@ -80,7 +80,7 @@ public:
 
 public:
   LightApp_Dialog( QWidget* = 0, const char* = 0, bool = false,
-                    bool = false, const int = Standard, Qt::WindowFlags = 0 );
+                    bool = false, const int = Standard, Qt::WindowFlags = {} );
   virtual ~LightApp_Dialog();
   
   virtual void    show();

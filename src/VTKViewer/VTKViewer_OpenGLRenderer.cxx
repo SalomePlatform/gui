@@ -22,7 +22,11 @@
 
 // to compile, otherwise we get:
 // #error gl.h included before glew.h
+#if defined(__APPLE__)
+#include <OpenGL/gl.h>
+#else
 #include <vtkglew/include/GL/glew.h>
+#endif
 
 #include "VTKViewer_OpenGLRenderer.h"
 #include "VTKViewer_Texture.h"
@@ -42,7 +46,9 @@
 #include <vtkPNGWriter.h>
 #include <vtkOpenGLTexture.h>
 #include <vtkTimerLog.h>
+#if !defined(__APPLE__)
 #include <vtk_glew.h>
+#endif
 #include <vtkObjectFactory.h>
 
 #include <Basics_Utils.hxx>

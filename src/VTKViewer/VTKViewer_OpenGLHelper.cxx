@@ -24,21 +24,29 @@
 #include "VTKViewer_OpenGLHelper.h"
 #include <Basics_Utils.hxx>
 
+
 #ifndef WIN32
 # ifndef GLX_GLXEXT_LEGACY
 #  define GLX_GLXEXT_LEGACY
 # endif
-# include <GL/glx.h>
+#ifdef __APPLE__
+  #include <OpenGL/gl.h>
+#else
+  #include <GL/gl.h>
+#endif
 # include <dlfcn.h>
 #else
 # include <wingdi.h>
 #endif
+
+
 
 #ifndef WIN32
 #define GL_GetProcAddress( x )   glXGetProcAddressARB( (const GLubyte*)x )
 #else
 #define GL_GetProcAddress( x )   wglGetProcAddress( (const LPCSTR)x )
 #endif 
+
 
 // ============================================================================
 // function : VTKViewer_OpenGLHelper
@@ -97,7 +105,7 @@ void VTKViewer_OpenGLHelper::Init()
 {
   if (mIsInitialized)
     return;
-
+#if !defined(__APPLE__) // GL function exposed directly 
   vglShaderSourceARB = (PFNGLSHADERSOURCEARBPROC)GL_GetProcAddress( "glShaderSourceARB" );
   if( !vglShaderSourceARB )
     return;
@@ -158,6 +166,7 @@ void VTKViewer_OpenGLHelper::Init()
   if(!vglDisableVertexAttribArrayARB)
     return;
 
+
 #ifdef VTK_OPENGL2
   vglDetachObjectARB = (PFNGLDETACHOBJECTARBPROC)GL_GetProcAddress( "glDetachObjectARB" );
   if( !vglDetachObjectARB )
@@ -210,6 +219,7 @@ void VTKViewer_OpenGLHelper::Init()
   vglUniform1iARB = (PFNGLUNIFORM1IARBPROC)GL_GetProcAddress( "glUniform1i" );
   if( !vglUniform1iARB )
     return;
+#endif
 #endif
 
   mIsInitialized = true;
@@ -280,13 +290,13 @@ bool VTKViewer_OpenGLHelper::CreateShaderProgram (const std::string& theFilePath
 
   free( shaderContent );
 
-  vglGetShaderivARB (theVertexShader, GL_COMPILE_STATUS, &compileStatus);
+  vglGetShaderivARB (GLcast(theVertexShader), GL_COMPILE_STATUS, &compileStatus);
   if (compileStatus != GL_TRUE)
   {
     GLint size;
     GLcharARB info[1024];
 
-    vglGetShaderInfoLogARB (theVertexShader, 1024, &size, info);
+    vglGetShaderInfoLogARB (GLcast(theVertexShader), 1024, &size, info);
     std::cerr << "Can't compile vertex shader." << std::endl;
     std::cerr << info << std::endl;
 
@@ -304,13 +314,13 @@ bool VTKViewer_OpenGLHelper::CreateShaderProgram (const std::string& theFilePath
 
   free (shaderContent);
 
-  vglGetShaderivARB (theFragmentShader, GL_COMPILE_STATUS, &compileStatus);
+  vglGetShaderivARB (GLcast(theFragmentShader), GL_COMPILE_STATUS, &compileStatus);
   if (compileStatus != GL_TRUE)
   {
     GLint size;
     GLcharARB info[1024];
 
-    vglGetShaderInfoLogARB (theVertexShader, 1024, &size, info);
+    vglGetShaderInfoLogARB (GLcast(theVertexShader), 1024, &size, info);
     std::cerr << "Can't compile fragment shader." << std::endl;
     std::cerr << info << std::endl;
     return false;
@@ -321,7 +331,7 @@ bool VTKViewer_OpenGLHelper::CreateShaderProgram (const std::string& theFilePath
   vglAttachObjectARB (theProgram, theFragmentShader);
   vglLinkProgramARB  (theProgram);
 
-  vglGetProgramivARB (theProgram, GL_LINK_STATUS, &linked);
+  vglGetProgramivARB (GLcast(theProgram), GL_LINK_STATUS, &linked);
   if (!linked)
   {
     std::cerr << "Can't link program." << std::endl;
@@ -329,7 +339,7 @@ bool VTKViewer_OpenGLHelper::CreateShaderProgram (const std::string& theFilePath
   }
 
   vglValidateProgramARB (theProgram);
-  vglGetProgramivARB (theProgram, GL_VALIDATE_STATUS, &validateStatus);
+  vglGetProgramivARB (GLcast(theProgram), GL_VALIDATE_STATUS, &validateStatus);
 
   if (validateStatus != GL_TRUE)
   {

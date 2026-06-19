@@ -26,7 +26,7 @@ INCLUDE(UsePyQt)
 
 # additional include directories
 INCLUDE_DIRECTORIES(
-  $(QT_INCLUDES)
+  ${QT_INCLUDES}
   ${PYTHON_INCLUDE_DIRS}
   ${SIP_INCLUDE_DIR}
   ${PROJECT_BINARY_DIR}
@@ -46,13 +46,21 @@ SET(_sip_files PyEditorPy.sip)
 
 # sources / sip wrappings
 PYQT_WRAP_SIP(_sip_SOURCES ${_sip_files})
-
+message(STATUS "[SIP output] ${_sip_SOURCES}")
 # sources / to compile
 SET(PyEditorPy_SOURCES ${_sip_SOURCES})
 
 # --- rules ---
 
-ADD_LIBRARY(PyEditorPy ${PyEditorPy_SOURCES})
+
+add_definitions(-Dprotected=public -DSIP_PROTECTED_IS_PUBLIC)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Dprotected=public -DSIP_PROTECTED_IS_PUBLIC")
+
+INCLUDE_DIRECTORIES(
+  ${CMAKE_CURRENT_BINARY_DIR}/_sip_SOURCES_sipbuild
+)
+
+ADD_LIBRARY(PyEditorPy MODULE ${PyEditorPy_SOURCES})
 IF(WIN32)
   SET_TARGET_PROPERTIES(PyEditorPy PROPERTIES SUFFIX ".pyd" DEBUG_OUTPUT_NAME PyEditorPy_d RELEASE_OUTPUT_NAME PyEditorPy)
 ELSE()

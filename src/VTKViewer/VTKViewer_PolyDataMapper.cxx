@@ -180,7 +180,7 @@ int VTKViewer_PolyDataMapper::InitShader()
   this->myLocations.GeneralPointSize    = this->OpenGLHelper.vglGetUniformLocationARB( this->PointProgram, "uGeneralPointSize" );
   this->myLocations.PointSprite         = this->OpenGLHelper.vglGetUniformLocationARB( this->PointProgram, "uPointSprite" );
 
-  this->OpenGLHelper.vglUseProgramObjectARB( current_program );
+  this->OpenGLHelper.vglUseProgramObjectARB( GLcastInv(current_program) );
 
   this->OpenGLHelper.vglGenVertexArraysARB(1, &this->VertexArrayObject);
 #else
@@ -620,7 +620,7 @@ void VTKViewer_PolyDataMapper::RenderPiece( vtkRenderer* ren, vtkActor* act )
     //    this->RenderEdges(ren,act);
     //this->RenderPieceFinish(ren, act);
 #endif    
-    this->OpenGLHelper.vglUseProgramObjectARB( current_program );
+    this->OpenGLHelper.vglUseProgramObjectARB( GLcastInv(current_program) );
     this->CleanupPointSprites();
     glBindTexture( GL_TEXTURE_2D, 0 );
   }  
@@ -1000,7 +1000,7 @@ void VTKViewer_PolyDataMapper::InternalDraw(vtkRenderer* ren, vtkActor* act ) {
        this->OpenGLHelper.vglDeleteBuffersARB( 1, &aBufferObjectID );
        this->OpenGLHelper.vglBindVertexArrayARB( 0 );
 
-       this->OpenGLHelper.vglUseProgramObjectARB( current_program );
+       this->OpenGLHelper.vglUseProgramObjectARB( GLcastInv(current_program) );
 #else
        GLuint aBufferObjectID, aDiamsID = 0;
        GLint attribute_diams = -1;

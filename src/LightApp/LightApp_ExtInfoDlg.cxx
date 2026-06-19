@@ -273,7 +273,11 @@ QByteArray LightApp_ExtInfoDlg::renderExtTreeGraph(const GraphWrapper& graph) co
 
   MESSAGE("Render dependency tree...\n");
   char* buffer = nullptr;
+#if defined(__APPLE__)
+  size_t bufferLength = 0;
+#else
   unsigned int bufferLength = 0;
+#endif
   res = gvRenderData(gvc, extTreeGraph, "svg", &buffer, &bufferLength);
   if (res)
   {

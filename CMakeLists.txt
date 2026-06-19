@@ -137,7 +137,7 @@ ENDIF()
 ## GUI specifics
 ##
 
-FIND_PACKAGE(SalomeSIP REQUIRED)  # should come after Python and before PyQt
+#FIND_PACKAGE(SalomeSIP REQUIRED)  # should come after Python and before PyQt
 
 # Build with GUI observers feature
 IF(SALOME_GUI_USE_OBSERVERS)

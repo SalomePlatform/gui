@@ -160,7 +160,8 @@ void Plot2d_Curve::updatePlotItem( QwtPlotItem* theItem )
       aCurve->clearDeviationData();
     }
   } else {
-    aCurve->setSamples( NULL, NULL, 0 );
+    aCurve->setSamples(static_cast<const double*>(nullptr),
+                   static_cast<const double*>(nullptr), 0);
   }
 }
 

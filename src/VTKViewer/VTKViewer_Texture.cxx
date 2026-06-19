@@ -38,7 +38,9 @@
 #include "vtkOpenGLRenderWindow.h"
 #include "vtkTransform.h"
 #include "vtkPixelBufferObject.h"
+#if !defined(__APPLE__)
 #include "vtk_glew.h"
+#endif 
 #include <vtkObjectFactory.h>
 
 vtkStandardNewMacro(VTKViewer_Texture)

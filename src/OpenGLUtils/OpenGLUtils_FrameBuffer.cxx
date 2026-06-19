@@ -151,9 +151,10 @@ OpenGLUtils_FrameBuffer::~OpenGLUtils_FrameBuffer()
   release();
 }
 
+
 bool OpenGLUtils_FrameBuffer::init( const GLsizei& xSize, const GLsizei& ySize )
 {
-#if defined(VTK_OPENGL2) && ! defined(WIN32)
+#if defined(VTK_OPENGL2) && ! defined(WIN32) && !defined(__APPLE__)
   int n = 0;
   std::ostringstream strm;
   glGetIntegerv(GL_NUM_EXTENSIONS, &n);

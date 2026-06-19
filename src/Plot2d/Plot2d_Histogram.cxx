@@ -27,6 +27,13 @@
 
 #include <qwt_plot_curve.h>
 
+
+#if QWT_VERSION >= 0x060200
+  #include <QVector>
+
+  template<class T> using  QwtArray = QVector<T>;
+#endif
+
 const int MAX_ATTEMPTS = 10;     // max attempts
 
 /*!

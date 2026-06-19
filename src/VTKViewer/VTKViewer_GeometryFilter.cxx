@@ -129,11 +129,20 @@ VTKViewer_GeometryFilter
 static inline bool toShowEdge( vtkIdType id1, vtkIdType id2, vtkIdType cellId, vtkUnstructuredGrid* input )
 {
   // return true if the given cell is the 1st among cells including the edge
+  #if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9,0,0)
+  vtkStaticCellLinks * links = static_cast<vtkStaticCellLinks *>(input->GetLinks());
+  if ( !links ) {
+    input->BuildLinks();
+    links = static_cast<vtkStaticCellLinks *>(input->GetLinks());
+  }
+  #else 
   vtkStaticCellLinks * links = static_cast<vtkStaticCellLinks *>(input->GetCellLinks());
   if ( !links ) {
     input->BuildLinks();
     links = static_cast<vtkStaticCellLinks *>(input->GetCellLinks());
   }
+  #endif
+  
   if ( id1 < id2 )
     std::swap( id1, id2 );
   vtkIdType *cells = links->GetCells( id1 );
@@ -463,8 +472,13 @@ VTKViewer_GeometryFilter
     }//for all cells
   }//if not all visible
 
+  #if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9,0,0)
+  if ( input->GetLinks() )
+    input->BuildLinks();
+  #else
   if ( input->GetCellLinks() )
     input->BuildLinks();
+  #endif
 
   // Loop over all cells now that visibility is known
   // (Have to compute visibility first for 3D cell boundaries)
@@ -1324,11 +1338,16 @@ VTKViewer_GeometryFilter
   {
     delete [] cellVis;
   }
-
+  #if VTK_VERSION_NUMBER >= VTK_VERSION_CHECK(9,0,0)
+  if ( input->GetLinks() ){
+    input->GetLinks()->Initialize();
+  }
+  #else
   if ( input->GetCellLinks() )
   {
     input->GetCellLinks()->Initialize(); // free memory
   }
+  #endif
 
   // fill myVTK2ObjIds vector in ascending cell dimension order
   myVTK2ObjIds.clear();

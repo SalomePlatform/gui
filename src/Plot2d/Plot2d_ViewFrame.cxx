@@ -63,6 +63,8 @@
 #include <QLocale>
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
+#include <QList>
+#include <QVector>
 
 #include <qwt_math.h>
 #include <qwt_plot_layout.h>
@@ -77,6 +79,13 @@
 #include <qwt_plot_renderer.h>
 #include <qwt_legend.h>
 #include <qwt_scale_widget.h>
+#include <qwt_scale_map.h>
+
+
+
+#if QWT_VERSION >= 0x060200
+  typedef QList<double> QwtValueList;
+#endif
 
 #include <stdlib.h>
 #include <limits>
@@ -2862,10 +2871,16 @@ void Plot2d_ViewFrame::setCurveType( QwtPlotCurve* curve, int /*curveType*/ )
   }
   else if ( myCurveType == 2 ) {
     curve->setStyle( QwtPlotCurve::Lines );
-    QwtSplineCurveFitter* fitter = new QwtSplineCurveFitter();
-    fitter->setSplineSize( 250 );
-    curve->setCurveAttribute( QwtPlotCurve::Fitted, true );
-    curve->setCurveFitter( fitter );
+    #if QWT_VERSION < 0x060200
+      QwtSplineCurveFitter* fitter = new QwtSplineCurveFitter();
+      fitter->setSplineSize(250);
+      curve->setCurveAttribute( QwtPlotCurve::Fitted, true );
+      curve->setCurveFitter(fitter);   
+    #else
+    // Qwt >= 6.2: class removed, use built-in fitting flag
+    curve->setCurveAttribute(QwtPlotCurve::Fitted, true);
+    #endif
+
   }
 }
 

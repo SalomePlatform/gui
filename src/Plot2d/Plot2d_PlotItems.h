@@ -33,7 +33,14 @@
 #include <qwt_plot_curve.h>
 #include <qwt_plot.h>
 #include <qwt_series_data.h>
-#include <qwt_compat.h>
+#include <qwt_global.h>
+#if defined(QWT_VERSION) && (QWT_VERSION < 0x060200)
+  #include <qwt_compat.h>
+#endif
+
+#if QWT_VERSION >= 0x060200
+typedef QRectF QwtDoubleRect;
+#endif
 
 class PLOT2D_EXPORT Plot2d_QwtLegendLabel : public QwtLegendLabel
 {

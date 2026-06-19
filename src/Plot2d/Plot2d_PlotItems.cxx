@@ -41,6 +41,12 @@
 #include <qwt_legend.h>
 #include <qwt_legend_label.h>
 #include <qwt_plot_dict.h>
+#include <qwt_graphic.h>   
+
+
+#if QWT_VERSION >= 0x060200
+#define qwtMin qMin 
+#endif
 
 const int SPACING = 10;
 const int SYMBOL_SIZE = 13;

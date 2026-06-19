@@ -42,6 +42,8 @@
 #include <qwt_plot_canvas.h>
 #include <qwt_legend.h>
 
+
+
 #include <iostream>
 #include <ostream>
 

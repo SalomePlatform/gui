@@ -35,7 +35,7 @@
 
 #include <string>
 
-#include <pqOptions.h>
+//#include <pqOptions.h>
 #include <pqSettings.h>
 #include <pqPVApplicationCore.h>
 #include <pqTabbedMultiViewWidget.h>
@@ -44,6 +44,8 @@
 #include <pqPipelineBrowserWidget.h>
 #include <pqServerDisconnectReaction.h>
 
+#include <vtkProcessModule.h>
+#include <vtkCLIOptions.h>
 //---------- Static init -----------------
 pqPVApplicationCore* PVViewer_Core::MyCoreApp = nullptr;
 bool PVViewer_Core::MyPqTabWidSingletonLoaded = false;
@@ -94,15 +96,16 @@ bool PVViewer_Core::ParaViewInitAppCore()
         }
       //
       MyCoreApp = new pqPVApplicationCore (argc, argv);
-      for (int i = 0; i < argc; i++)
-        free(argv[i]);
-      delete[] argv;
-      if (MyCoreApp->getOptions()->GetHelpSelected() ||
-          MyCoreApp->getOptions()->GetUnknownArgument() ||
-          MyCoreApp->getOptions()->GetErrorMessage() ||
-          MyCoreApp->getOptions()->GetTellVersion()) {
-          return false;
-      }
+      // for (int i = 0; i < argc; i++)
+      //   free(argv[i]);
+      // delete[] argv;
+      // vtkPVOptions* options = vtkProcessModule::GetProcessModule()->GetOptions();
+      // if (options->GetHelpSelected() ||
+      //     options->GetUnknownArgument() ||
+      //     options->GetErrorMessage() ||
+      //     options->GetTellVersion()) {
+      //       return false;
+      // }
   }
   return true;
 }

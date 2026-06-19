@@ -28,8 +28,14 @@
 #include <windows.h>
 #endif
 
-#include <GL/gl.h>
-
+#ifdef __APPLE__
+  #include <OpenGL/gl.h>
+  #define GLcast(X) (GLuint)(uintptr_t)X
+  #define GLcastInv(X) (GLhandleARB)(uintptr_t)X
+#else
+  #include <GL/gl.h>
+  #define GLcast(X) X
+#endif
 
 #ifndef GL_ARB_shader_objects
 typedef GLuint GLhandleARB;

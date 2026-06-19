@@ -38,7 +38,6 @@ SET(_link_LIBRARIES
   ${KERNEL_SALOMELocalTrace} 
   ${KERNEL_OpUtil}
   suit 
-  PV3DViewer 
   PVViewer
   PVServerService
   ParaView::pqApplicationComponents
